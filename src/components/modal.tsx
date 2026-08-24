@@ -1,0 +1,4 @@
+"use client";
+import { X } from "lucide-react";
+import { useEffect } from "react";
+export function Modal({open,title,onClose,children}:{open:boolean;title:string;onClose:()=>void;children:React.ReactNode}){useEffect(()=>{const fn=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};if(open)document.addEventListener("keydown",fn);return()=>document.removeEventListener("keydown",fn)},[open,onClose]);if(!open)return null;return <div className="fixed inset-0 z-[80] grid place-items-center bg-black/45 p-4" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><section className="panel max-h-[90vh] w-full max-w-xl overflow-auto p-6" role="dialog" aria-modal="true" aria-labelledby="modal-title"><header className="mb-5 flex items-center justify-between"><h2 id="modal-title" className="text-xl font-bold">{title}</h2><button className="btn !p-2" aria-label="Close dialog" onClick={onClose}><X size={18}/></button></header>{children}</section></div>}

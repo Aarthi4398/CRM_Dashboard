@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <main className="min-h-screen grid place-items-center p-6"><section className="panel max-w-lg p-10 text-center"><div className="text-7xl font-bold text-[#465fff]">404</div><h1 className="mt-5 text-2xl font-bold">This CRM route does not exist</h1><p className="muted mt-3">The page may have moved, or the link is no longer available.</p><Link className="btn btn-primary mt-7" href="/dashboard">Return to dashboard</Link></section></main>}
