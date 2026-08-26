@@ -7,5 +7,11 @@ test-results
 .env*
 !.env.example
 .vercel
+.github-cli
+docs/Aarthi_CRM_Interview_Guide.docx
+docs/INTERVIEW_GUIDE.md
+docs/build_interview_guide.py
+docs/build_interview_pdf.py
+output/
 *.log
 *.tsbuildinfo

@@ -1,4 +1,8 @@
 import { expect,test } from "@playwright/test";
+import { menuSections } from "../src/lib/menu";
 const routes=["dashboard","contacts","companies","deals","tasks","calendar","profile"];
-for(const route of routes)test(`${route} route loads`,async({page})=>{await page.goto(`/${route}`);await expect(page.locator("h1")).toBeVisible();await expect(page.locator("body")).not.toContainText("This CRM route does not exist")});
+const menuRoutes=[...new Set(menuSections.flatMap(section=>section.items.flatMap(item=>item.href?[item.href]:(item.children??[]).map(child=>child.href))))];
+for(const route of routes)test(`${route} route loads`,async({page})=>{await page.goto(`/${route}`);await expect(page.locator("main h1, main h2").first()).toBeVisible();await expect(page.locator("body")).not.toContainText("This CRM route does not exist")});
 test("theme persists",async({page})=>{await page.goto("/dashboard");await page.getByRole("button",{name:/Switch to dark theme/i}).click();await expect(page.locator("html")).toHaveClass(/dark/);await page.reload();await expect(page.locator("html")).toHaveClass(/dark/)});
+test("recent orders filter and selection work",async({page})=>{await page.goto("/dashboard");await page.getByRole("button",{name:"Filter",exact:true}).click();await page.getByRole("button",{name:"Pending",exact:true}).click();await expect(page.locator("tbody tr")).toHaveCount(2);await page.locator("tbody input[type=checkbox]").first().check();await expect(page.getByText("1 order selected")).toBeVisible()});
+test("every sidebar destination is connected",async({page},testInfo)=>{test.skip(testInfo.project.name==="mobile","Full route audit runs once on desktop");test.setTimeout(120_000);for(const href of menuRoutes){await page.goto(href);await expect(page.locator("main h1, main h2").first(),`${href} should render a page`).toBeVisible();await expect(page.locator("body")).not.toContainText("This CRM route does not exist")}});
