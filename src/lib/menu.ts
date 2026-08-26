@@ -23,7 +23,7 @@ export const menuSections:MenuSection[]=[
  {title:"Others",items:[
   {label:"Charts",icon:ChartNoAxesCombined,children:[{label:"Line Chart",href:"/line-chart"},{label:"Bar Chart",href:"/bar-chart"},{label:"Pie Chart",href:"/pie-chart"},{label:"Radar Chart",href:"/radar-chart"},{label:"Radial Chart",href:"/radial-chart"}]},
   {label:"Maps",icon:MapIcon,children:[{label:"Maps",href:"/maps"},{label:"Vector Map",href:"/vector-map"}]},
-  {label:"UI Elements",icon:WandSparkles,children:["Alerts","Avatar","Badge","Breadcrumb","Buttons","Buttons Group","Cards","Carousel","Dropdowns","Images","Links","List","Modals","Notification","Pagination","Popovers","Progressbar","Ribbons","Spinners","Tabs","Tooltips","Videos"].map(label=>({label,href:label === "Avatar" ? "/avatars" : `/${label.toLowerCase().replaceAll(" ","-").replace("progressbar","progress-bar")}`}))},
+  {label:"UI Elements",icon:WandSparkles,children:["Alerts","Avatar","Badge","Breadcrumb","Buttons","Buttons Group","Cards","Carousel","Dropdowns","Images","Links","List","Modals","Notifications","Pagination","Popovers","Progressbar","Ribbons","Spinners","Tabs","Tooltips","Videos"].map(label=>({label,href:label === "Avatar" ? "/avatars" : `/${label.toLowerCase().replaceAll(" ","-").replace("progressbar","progress-bar")}`}))},
   {label:"Authentication",icon:LockKeyhole,children:[{label:"Sign In",href:"/signin"},{label:"Sign Up",href:"/signup"},{label:"Reset Password",href:"/reset-password"},{label:"Two Step Verification",href:"/two-step-verification"}]},
  ]},
 ];
