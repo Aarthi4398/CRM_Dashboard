@@ -1,7 +1,8 @@
 "use client";
 import {useState} from "react";
 import {AlertCircle,ArrowLeft,ArrowRight,Bell,Check,ChevronDown,ChevronRight,CircleCheck,Code2,Image as ImageIcon,Info,MapPin,Menu,MessageSquarePlus,Play,Plus,Search,Send,Share2,Sparkles,TriangleAlert,User,X} from "lucide-react";
-import {Area,AreaChart,Bar,BarChart as RechartsBarChart,CartesianGrid,Cell,Legend,Line,LineChart as RechartsLineChart,Pie,PieChart,PolarAngleAxis,PolarGrid,PolarRadiusAxis,Radar,RadarChart as RechartsRadarChart,RadialBar,RadialBarChart,ResponsiveContainer,Tooltip,XAxis,YAxis} from "recharts";
+import {Area,AreaChart,BarChart as RechartsBarChart,CartesianGrid,Cell,Legend,Line,LineChart as RechartsLineChart,Pie,PieChart,PolarAngleAxis,PolarGrid,PolarRadiusAxis,Radar,RadarChart as RechartsRadarChart,RadialBarChart,ResponsiveContainer,Tooltip,XAxis,YAxis} from "recharts";
+import { TimedBar as Bar, TimedRadialBar as RadialBar } from "@/components/ui/timed-charts";
 
 const generators=new Set(["text-generator","image-generator","code-generator","video-generator"]);
 const layouts=new Set(["layout-one","layout-two","layout-three","layout-four","layout-five","layout-six"]);

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle2, Github, Linkedin, LogOut, Pencil, Trash2, Twitter } from "lucide-react";
+import Image from "next/image";
 import { Modal } from "@/components/modal";
 import { useCRM } from "@/lib/store";
 import { Input } from "../contacts/page";
@@ -32,9 +33,10 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <p className="muted text-sm">Home / User Profile</p>
+      <div className="profile-page-shell space-y-6 rounded-2xl border border-[var(--border)] bg-white p-4 shadow-[0_1px_2px_rgb(16_24_40/.04)] sm:p-6">
       <section className="panel p-5 sm:p-6">
         <div className="flex flex-col items-center gap-6 xl:flex-row">
-          <span className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-indigo-100 text-2xl font-bold text-[#465fff] ring-4 ring-[var(--panel)] shadow-sm">AR</span>
+          <span className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-indigo-100 ring-4 ring-white shadow-sm"><Image src="/logistics/courier-avatar.png" alt={`${form.name} profile`} fill sizes="96px" priority className="object-cover"/></span>
           <div className="min-w-0 flex-1 text-center xl:text-left">
             <h1 className="text-xl font-semibold">{form.name}</h1>
             <div className="muted mt-1 flex flex-wrap justify-center gap-x-3 text-sm xl:justify-start"><span>{form.role}</span><span aria-hidden="true">|</span><span>{form.location}</span></div>
@@ -62,6 +64,7 @@ export default function ProfilePage() {
         <h2 className="text-lg font-semibold text-red-600">Danger Zone</h2>
         <div className="mt-5 divide-y divide-[var(--border)]"><DangerAction icon={<LogOut size={18}/>} title="Log Out All Devices" description="Sign out from every active session." button="Log Out"/><DangerAction icon={<Trash2 size={18}/>} title="Delete Account" description="Once you delete your account, there is no going back." button="Delete Account"/></div>
       </section>
+      </div>
 
       {saved ? <div className="fixed bottom-6 right-6 flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-lg" aria-live="polite"><CheckCircle2 size={18}/>Profile Saved</div> : null}
 
