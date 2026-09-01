@@ -31,23 +31,23 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="space-y-6">
-      <p className="muted text-sm">Home / User Profile</p>
+    <div>
       <div className="profile-page-shell space-y-6 rounded-2xl border border-[var(--border)] bg-white p-4 shadow-[0_1px_2px_rgb(16_24_40/.04)] sm:p-6">
+      <h1 className="text-xl font-semibold">Profile</h1>
       <section className="panel p-5 sm:p-6">
-        <div className="flex flex-col items-center gap-6 xl:flex-row">
-          <span className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-indigo-100 ring-4 ring-white shadow-sm"><Image src="/logistics/courier-avatar.png" alt={`${form.name} profile`} fill sizes="96px" priority className="object-cover"/></span>
-          <div className="min-w-0 flex-1 text-center xl:text-left">
-            <h1 className="text-xl font-semibold">{form.name}</h1>
-            <div className="muted mt-1 flex flex-wrap justify-center gap-x-3 text-sm xl:justify-start"><span>{form.role}</span><span aria-hidden="true">|</span><span>{form.location}</span></div>
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-center">
+          <span className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-indigo-100 ring-1 ring-[var(--border)]"><Image src="/logistics/courier-avatar.png" alt={`${form.name} profile`} fill sizes="96px" priority className="object-cover"/></span>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl font-semibold">{form.name}</h2>
+            <div className="muted mt-2 flex flex-wrap gap-x-3 text-sm"><span>{form.role}</span><span aria-hidden="true">|</span><span>{form.location}</span></div>
           </div>
-          <div className="flex items-center gap-3"><SocialButton label="Twitter"><Twitter size={18}/></SocialButton><SocialButton label="LinkedIn"><Linkedin size={18}/></SocialButton><SocialButton label="GitHub"><Github size={18}/></SocialButton></div>
+          <button className="btn self-start !px-4 !py-2 xl:self-center" onClick={() => setEditor("personal")}><Pencil size={16}/>Edit</button>
+        </div>
+        <div className="mt-7 grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-4">
+          <Info label="First Name" value={firstName}/><Info label="Last Name" value={lastName}/><div className="hidden xl:block" aria-hidden="true"/><div className="hidden xl:block" aria-hidden="true"/><Info label="Email Address" value={form.email}/><Info label="Phone" value={form.phone}/><Info label="Bio" value={form.bio}/>
+          <div><p className="muted text-xs">Social Links</p><div className="mt-2 flex items-center gap-2"><SocialButton label="Twitter"><Twitter size={18}/></SocialButton><SocialButton label="LinkedIn"><Linkedin size={18}/></SocialButton><SocialButton label="GitHub"><Github size={18}/></SocialButton></div></div>
         </div>
       </section>
-
-      <InfoCard title="Personal Information" onEdit={() => setEditor("personal")}>
-        <Info label="First Name" value={firstName}/><Info label="Last Name" value={lastName}/><Info label="Email Address" value={form.email}/><Info label="Phone" value={form.phone}/><Info label="Bio" value={form.bio} wide/>
-      </InfoCard>
       <InfoCard title="Address" onEdit={() => setEditor("address")}>
         <Info label="Country" value={country}/><Info label="City/State" value={form.location}/><Info label="Postal Code" value={postalCode}/><Info label="Tax ID" value={taxId}/>
       </InfoCard>
