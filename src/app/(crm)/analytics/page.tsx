@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { AreaChart, BarChart, CartesianGrid, Cell, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { TimedArea as Area, TimedBar as Bar, TimedPie as Pie } from "@/components/ui/timed-charts";
-import { EllipsisVertical, SlidersHorizontal } from "lucide-react";
+import { CardTitle as SharedCardTitle } from "@/components/ui/card-title";
+import { StatCard } from "@/components/ui/stat-card";
+import { SlidersHorizontal } from "lucide-react";
 
 const visitors = [168,385,201,298,187,195,291,110,215,390,280,112,123,212,270,190,310,115,90,380,112,223,292,170,290,110,115,290,380,312].map((value,index)=>({day:index+1,visitors:value}));
 const channels = [{name:"Google",mark:"G",color:"#4285f4",value:"4.7K"},{name:"Facebook",mark:"f",color:"#1877f2",value:"3.4K"},{name:"Threads",mark:"@",color:"#111827",value:"2.9K"},{name:"Google",mark:"G",color:"#ea4335",value:"1.5K"}];
@@ -59,8 +61,8 @@ export default function AnalyticsPage(){
   </div>
 }
 
-function Metric({label,value,change,down=false}:{label:string;value:string;change:string;down?:boolean}){return <article className="analytics-metric panel"><p className="metric-label muted">{label}</p><div className="metric-row"><p className="metric-value tabular-nums">{value}</p><div className="metric-comparison"><span className={`metric-change ${down?"down":"up"}`}>{change}</span><p className="muted">Vs last month</p></div></div></article>}
-function CardTitle({title,subtitle}:{title:string;subtitle?:string}){return <div className="flex items-start justify-between gap-3"><div><h2 className="text-xl font-semibold">{title}</h2>{subtitle?<p className="muted mt-1 text-sm">{subtitle}</p>:null}</div><button className="rounded-lg p-2 hover:bg-[var(--soft)]" aria-label={`${title} options`}><EllipsisVertical size={18}/></button></div>}
+function Metric({label,value,change,down=false}:{label:string;value:string;change:string;down?:boolean}){return <StatCard label={label} value={value} change={change} down={down} variant="analytics"/>}
+function CardTitle({title,subtitle}:{title:string;subtitle?:string}){return <SharedCardTitle title={title} subtitle={subtitle} variant="analytics"/>}
 function RankCard({title,label,rows}:{title:string;label:string;rows:{name:string;value:string}[]}){return <article className="analytics-rank-card panel flex flex-col overflow-hidden p-6"><CardTitle title={title}/><div className="mx-2 mt-5 grid grid-cols-[1fr_auto] border-b border-[var(--border)] pb-3 text-xs text-[var(--muted)]"><span>Source</span><span>{label}</span></div><div className="mx-2 divide-y divide-[var(--border)]">{rows.map((row,index)=><div className="flex items-center gap-3 py-3" key={`${row.name}-${index}`}><span className="min-w-0 flex-1 truncate text-sm font-normal">{row.name}</span><span className="text-sm font-normal tabular-nums">{row.value}</span></div>)}</div><button className="btn mt-3 w-full !py-3 text-sm !font-medium">Channels Report <span className="text-xl leading-none">→</span></button></article>}
 function Mini({value,label}:{value:string;label:string}){return <div><b className="text-lg tabular-nums">{value}</b><p className="muted mt-1 text-xs">{label}</p></div>}
 function WorldMap(){const [zoom,setZoom]=useState(1);return <div className="analytics-vector-map mt-6" role="group" aria-label="Interactive customer locations map"><div className="analytics-vector-map-canvas" style={{transform:`scale(${zoom})`}}><MapMarker name="United States" x="18%" y="43%"/><MapMarker name="France" x="44%" y="35%"/><MapMarker name="India" x="67%" y="50%"/><MapMarker name="Australia" x="79%" y="70%"/></div><nav aria-label="Map zoom controls"><button type="button" onClick={()=>setZoom(value=>Math.min(1.3,Number((value+.1).toFixed(1))))} aria-label="Zoom in">+</button><button type="button" onClick={()=>setZoom(value=>Math.max(.8,Number((value-.1).toFixed(1))))} aria-label="Zoom out">−</button></nav></div>}

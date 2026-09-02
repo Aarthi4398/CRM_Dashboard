@@ -4,14 +4,15 @@ import { useState } from "react";
 import { CheckCircle2, Github, Linkedin, LogOut, Pencil, Trash2, Twitter } from "lucide-react";
 import Image from "next/image";
 import { Modal } from "@/components/modal";
-import { useCRM } from "@/lib/store";
-import { Input } from "../contacts/page";
+import { useCRMActions, useCRMSelector } from "@/lib/store";
+import { TextInputField as Input } from "@/components/ui/text-input-field";
 
 type Editor = "personal" | "address" | null;
 
 export default function ProfilePage() {
-  const { state, setState } = useCRM();
-  const [form, setForm] = useState(state.profile);
+  const profile = useCRMSelector(state => state.profile);
+  const { setState } = useCRMActions();
+  const [form, setForm] = useState(profile);
   const [editor, setEditor] = useState<Editor>(null);
   const [saved, setSaved] = useState(false);
   const [country, setCountry] = useState("India");

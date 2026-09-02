@@ -1,7 +1,8 @@
 "use client";
 
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Clipboard, Clock3, CloudUpload, CreditCard, Eye, EyeOff, Mail, X } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { ChevronDown, ChevronRight, Clipboard, Clock3, CloudUpload, CreditCard, Eye, EyeOff, Mail, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
 const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
 
@@ -72,31 +73,6 @@ export default function FormElementsPage() {
 
 function FormCard({ title, children, bodyClassName = "" }: { title: string; children: React.ReactNode; bodyClassName?: string }) { return <section className="panel overflow-hidden"><header className="border-b border-[var(--border)] px-5 py-4 sm:px-6 sm:py-5"><h2 className="text-base font-semibold">{title}</h2></header><div className={`space-y-[21px] p-5 sm:p-6 ${bodyClassName}`}>{children}</div></section>; }
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div><span className="mb-2 block text-sm font-medium">{label}</span>{children}</div>; }
-function PremiumDatePicker() {
-  const today = new Date();
-  const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [viewDate, setViewDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
-  const monthLabel = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(viewDate);
-  const valueLabel = selectedDate ? new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit", year: "numeric" }).format(selectedDate) : "Select a date";
-  const days = useMemo(() => {
-    const year = viewDate.getFullYear(), month = viewDate.getMonth();
-    const leading = new Date(year, month, 1).getDay();
-    const total = new Date(year, month + 1, 0).getDate();
-    return [...Array(leading).fill(null), ...Array.from({ length: total }, (_, index) => new Date(year, month, index + 1))];
-  }, [viewDate]);
-  const sameDay = (a: Date | null, b: Date) => Boolean(a && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate());
-  return <div className="relative">
-    <input type="hidden" name="date" value={selectedDate ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}` : ""}/>
-    <button type="button" className="control !flex h-11 items-center justify-between py-0 text-left" aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((value) => !value)}><span className={`truncate ${selectedDate ? "" : "muted"}`}>{valueLabel}</span><CalendarDays className="muted shrink-0" size={19}/></button>
-    {open ? <div className="panel absolute left-0 z-40 mt-2 w-[min(20rem,calc(100vw-3rem))] p-4 shadow-[0_12px_32px_rgb(16_24_40/.16)]" role="dialog" aria-label="Choose a date">
-      <div className="mb-4 flex items-center justify-between"><button type="button" className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] hover:bg-[var(--soft)]" aria-label="Previous month" onClick={() => setViewDate((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1))}><ChevronLeft size={17}/></button><p className="text-sm font-semibold">{monthLabel}</p><button type="button" className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] hover:bg-[var(--soft)]" aria-label="Next month" onClick={() => setViewDate((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1))}><ChevronRight size={17}/></button></div>
-      <div className="grid grid-cols-7 text-center text-xs font-medium text-[var(--muted)]">{["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => <span className="py-2" key={day}>{day}</span>)}</div>
-      <div className="grid grid-cols-7 gap-1">{days.map((date, index) => date ? <button type="button" className={`grid aspect-square place-items-center rounded-lg text-sm hover:bg-indigo-50 hover:text-[#465fff] dark:hover:bg-indigo-500/10 ${sameDay(selectedDate, date) ? "bg-[#465fff] text-white hover:bg-[#465fff] hover:text-white" : sameDay(today, date) ? "border border-[#465fff] text-[#465fff]" : ""}`} key={date.toISOString()} onClick={() => { setSelectedDate(date); setOpen(false); }}>{date.getDate()}</button> : <span key={`empty-${index}`}/>)}</div>
-      <div className="mt-3 flex justify-between border-t border-[var(--border)] pt-3"><button type="button" className="text-sm text-[var(--muted)] hover:text-[var(--text)]" onClick={() => setSelectedDate(null)}>Clear</button><button type="button" className="text-sm font-medium text-[#465fff]" onClick={() => { setSelectedDate(today); setViewDate(new Date(today.getFullYear(), today.getMonth(), 1)); setOpen(false); }}>Today</button></div>
-    </div> : null}
-  </div>;
-}
 function Select({ name, placeholder = "Select an option" }: { name: string; placeholder?: string }) { return <div className="relative"><select className="control appearance-none pr-10" name={name} defaultValue=""><option value="" disabled>{placeholder}</option><option>Marketing</option><option>Template</option><option>Development</option></select><ChevronDown className="muted pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" size={18}/></div>; }
 function IconControl({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) { return <div className="control !flex h-11 items-center gap-3 py-0">{icon}<span className="h-5 border-l border-[var(--border)]"/>{children}</div>; }
 function InputAddon({ side, addon, children }: { side: "left" | "right"; addon: string; children: React.ReactNode }) { return <div className="control !flex items-center !p-0">{side === "left" && <span className="h-11 shrink-0 border-r border-[var(--border)] px-4 leading-[44px]">{addon}</span>}{children}{side === "right" && <span className="h-11 shrink-0 border-l border-[var(--border)] px-4 leading-[44px]">{addon}</span>}</div>; }

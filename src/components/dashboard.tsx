@@ -3,6 +3,7 @@
 import { Check, ChevronDown, EllipsisVertical, SlidersHorizontal as Filter, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AreaChart, CartesianGrid, Cell, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { StatCard } from "@/components/ui/stat-card";
 import { TimedArea as Area, TimedPie as Pie } from "@/components/ui/timed-charts";
 import { useCRM } from "@/lib/store";
 
@@ -61,7 +62,7 @@ export function Dashboard(){
  </div>
 }
 
-function Metric({value,label,change,positive=false}:{value:string;label:string;change:string;positive?:boolean}){return <article className="crm-metric panel p-6"><p className="text-[30px] font-bold leading-[38px] tracking-[-.02em]">{value}</p><div className="mt-5 flex items-center justify-between gap-4"><p className="text-[14px] leading-5">{label}</p><div className="flex items-center gap-2"><span className={`badge ${positive?"bg-emerald-50 text-emerald-600":"bg-red-50 text-red-500"}`}>{change}</span><span className="muted text-sm">last month</span></div></div></article>}
+function Metric({value,label,change,positive=false}:{value:string;label:string;change:string;positive?:boolean}){return <StatCard label={label} value={value} change={change} down={!positive} variant="crm"/>}
 function Profit({value,change,positive=false}:{value:string;change:string;positive?:boolean}){return <div><div className="flex items-center gap-3"><p className="text-xl font-bold leading-[30px] tracking-[-.02em]">{value}</p><span className={`badge ${positive?"bg-emerald-50 text-emerald-600":"bg-red-50 text-red-500"}`}>{change}</span></div><p className="muted mt-1 text-sm">Avg. Yearly Profit</p></div>}
 function CardTitle({title,subtitle}:{title:string;subtitle?:string}){return <div><h2 className="text-[20px] font-semibold">{title}</h2>{subtitle?<p className="muted mt-1 text-sm">{subtitle}</p>:null}</div>}
 function Gauge({value}:{value:number}){const arc="M 18.637 112.501 A 103.256 103.256 0 0 1 224.363 112.501";return <div><div className="relative mx-auto aspect-[243/118] w-full max-w-[380px]"><svg viewBox="0 0 243 118" className="absolute inset-0 h-full w-full" role="img" aria-label={`$${value} estimated revenue goal`}><path d={arc} fill="none" stroke="rgba(228,231,236,.85)" strokeWidth="6.854" strokeLinecap="round"/><path className="dashboard-gauge-progress" pathLength="100" d={arc} fill="none" stroke="rgba(70,95,255,.85)" strokeWidth="6.854" strokeLinecap="round" strokeDasharray={`${value} 100`}/></svg><div className="absolute inset-x-0 top-[48%] text-center"><p className="text-xs leading-4 text-[var(--muted)]">June Goals</p><p className="text-[36px] font-semibold leading-[46px] tracking-[-.02em]">${value}</p></div></div><div className="mt-6 space-y-5 border-t border-[var(--border)] pt-6"><RevenueSource label="Marketing" amount="$30,569.00" percent={85}/><RevenueSource label="Sales" amount="$20,486.00" percent={55}/></div></div>}

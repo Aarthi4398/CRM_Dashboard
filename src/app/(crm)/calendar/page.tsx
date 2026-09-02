@@ -1,7 +1,7 @@
 "use client";
 
 import { Modal } from "@/components/modal";
-import { useCRM } from "@/lib/store";
+import { useCRMActions, useCRMSelector } from "@/lib/store";
 import type { CalendarEvent } from "@/lib/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -17,13 +17,14 @@ type FormState = { id?: string; title: string; date: string; time: string; categ
 const emptyForm: FormState = { title: "", date: "2026-08-24", time: "10:00", category: "Meeting" };
 
 export default function CalendarPage() {
-  const { state, setState } = useCRM();
+  const events = useCRMSelector(state => state.events);
+  const { setState } = useCRMActions();
   const [cursor, setCursor] = useState(new Date(2026, 7, 1));
   const [view, setView] = useState<View>("month");
   const [form, setForm] = useState<FormState>(emptyForm);
   const [open, setOpen] = useState(false);
   const year = cursor.getFullYear(), month = cursor.getMonth();
-  const allEvents = useMemo(() => [...featured, ...state.events.filter(event => !featured.some(item => item.id === event.id))], [state.events]);
+  const allEvents = useMemo(() => [...featured, ...events.filter(event => !featured.some(item => item.id === event.id))], [events]);
   const monthCells = useMemo(() => {
     const first = new Date(year, month, 1), start = new Date(year, month, 1 - first.getDay());
     return Array.from({ length: 42 }, (_, index) => { const date = new Date(start); date.setDate(start.getDate() + index); return date; });
