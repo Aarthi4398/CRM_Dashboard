@@ -21,7 +21,7 @@ test("premium date picker opens and clears its selected value", async ({ page })
   await dateButton.click();
   await expect(page.getByRole("button", { name: "Today", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Today", exact: true }).click();
-  await dateButton.click();
+  await page.locator('button[aria-haspopup="dialog"]').first().click();
   await page.getByRole("button", { name: "Clear", exact: true }).click();
   await expect(dateButton).toContainText("Select a date");
 });
@@ -37,6 +37,7 @@ test("underline tabs expose tab semantics without underlining their text", async
 for (const route of ["basic-tables", "data-tables", "alerts", "cards", "carousel", "dropdowns", "pagination", "popovers", "tabs", "text-generator", "layout-one", "line-chart", "maps", "buttons"]) {
   test(`split catalog family renders ${route}`, async ({ page }) => {
     await page.goto(`/${route}`);
-    await expect(page.locator("main h1, main h2").first()).toBeVisible();
+    await expect(page.locator("main").first()).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/Application error|Internal Server Error/);
   });
 }

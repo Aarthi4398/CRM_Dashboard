@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { seedState } from "./seed";
 import type { CRMState } from "./types";
+import { isCRMState, normalizeCRMRelationships } from "./validate-state";
 
 const STORAGE_KEY = "aarthi-crm:v1";
 type Store = { state:CRMState; setState:React.Dispatch<React.SetStateAction<CRMState>>; reset:()=>void; hydrated:boolean };
@@ -17,12 +18,6 @@ type SelectorStore = {
 };
 
 const SelectorStoreContext = createContext<SelectorStore | null>(null);
-
-function isState(value:unknown): value is CRMState {
-  if (!value || typeof value !== "object") return false;
-  const v=value as Partial<CRMState>;
-  return Array.isArray(v.contacts)&&Array.isArray(v.companies)&&Array.isArray(v.deals)&&Array.isArray(v.tasks)&&Array.isArray(v.events)&&!!v.profile;
-}
 
 export function StoreProvider({children}:{children:React.ReactNode}) {
   const [state,setState]=useState<CRMState>(seedState);
@@ -39,7 +34,7 @@ export function StoreProvider({children}:{children:React.ReactNode}) {
   useLayoutEffect(() => selectorStore.update(state), [selectorStore, state]);
   // Hydration is the one deliberate effect-to-state synchronization point.
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(()=>{ try { const raw=localStorage.getItem(STORAGE_KEY); if(raw){const parsed:unknown=JSON.parse(raw); if(isState(parsed)) setState(parsed);} } catch { localStorage.removeItem(STORAGE_KEY); } setHydrated(true); },[]);
+  useEffect(()=>{ try { const raw=localStorage.getItem(STORAGE_KEY); if(raw){const parsed:unknown=JSON.parse(raw); if(isCRMState(parsed)) setState(normalizeCRMRelationships(parsed));else{console.warn("Ignoring invalid persisted CRM data.");localStorage.removeItem(STORAGE_KEY);}} } catch(error) { console.warn("Unable to restore persisted CRM data.",error);localStorage.removeItem(STORAGE_KEY); } setHydrated(true); },[]);
   useEffect(()=>{ if(hydrated) localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); },[state,hydrated]);
   const reset=useCallback(()=>{setState(seedState);localStorage.removeItem(STORAGE_KEY);},[]);
   const value=useMemo(()=>({state,setState,reset,hydrated}),[state,reset,hydrated]);

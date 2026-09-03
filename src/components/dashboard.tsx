@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { AreaChart, CartesianGrid, Cell, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { StatCard } from "@/components/ui/stat-card";
 import { TimedArea as Area, TimedPie as Pie } from "@/components/ui/timed-charts";
-import { useCRM } from "@/lib/store";
+import { useCRMSelector } from "@/lib/store";
 
 type Period = "Monthly" | "Quarterly" | "Annually";
 type OrderStatus = "Complete" | "Pending" | "Cancel";
@@ -30,13 +30,14 @@ const salesCategories=[
 ];
 
 export function Dashboard(){
- const {state}=useCRM();
+ const deals=useCRMSelector(state=>state.deals);
+ const events=useCRMSelector(state=>state.events);
  const [period,setPeriod]=useState<Period>("Monthly");
  const [status,setStatus]=useState<"All"|OrderStatus>("All");
  const [filterOpen,setFilterOpen]=useState(false);
  const [selected,setSelected]=useState<string[]>([]);
- const active=state.deals.filter(d=>!["Won","Lost"].includes(d.stage));
- const won=state.deals.filter(d=>d.stage==="Won");
+ const active=deals.filter(d=>!["Won","Lost"].includes(d.stage));
+ const won=deals.filter(d=>d.stage==="Won");
  const visibleOrders=useMemo(()=>status==="All"?orders:orders.filter(o=>o.status===status),[status]);
  const allSelected=visibleOrders.length>0&&visibleOrders.every(o=>selected.includes(o.id));
  const toggleAll=()=>setSelected(allSelected?selected.filter(id=>!visibleOrders.some(o=>o.id===id)):[...new Set([...selected,...visibleOrders.map(o=>o.id)])]);
@@ -52,7 +53,7 @@ export function Dashboard(){
   </section>
   <section className="grid items-start gap-6 lg:grid-cols-2">
    <article className="panel relative h-fit px-6 py-7"><CardTitle title="Sales Category"/><button className="absolute right-5 top-6 rounded-lg p-2 hover:bg-[var(--soft)]" aria-label="Sales category options"><EllipsisVertical size={19} className="muted"/></button><div className="mt-7 grid items-center gap-7 sm:grid-cols-[minmax(220px,1fr)_minmax(190px,.9fr)]"><div className="relative mx-auto h-[225px] w-full max-w-[250px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie animationDuration={1800} animationEasing="ease-in-out" data={salesCategories} dataKey="value" cx="50%" cy="50%" innerRadius={62} outerRadius={95} startAngle={90} endAngle={-270} stroke="none">{salesCategories.map(item=><Cell key={item.name} fill={item.color}/>)}</Pie><Tooltip formatter={(value)=>`${value}%`}/></PieChart></ResponsiveContainer><div className="pointer-events-none absolute inset-0 grid place-items-center text-center"><div><p className="text-[20px] font-semibold">Total 3.5K</p><p className="mt-1 text-sm font-semibold">2450</p></div></div></div><div className="space-y-7">{salesCategories.map(item=><div key={item.name} className="flex items-start gap-3"><span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{background:item.color}}/><div className="min-w-0"><h3 className="whitespace-nowrap text-sm font-medium">{item.name}</h3><p className="muted mt-1 whitespace-nowrap text-sm"><span className="font-medium text-[var(--text)]">{item.value}%</span><span className="mx-2">•</span>{item.products}</p></div></div>)}</div></div></article>
-   <article className="panel relative h-fit px-6 py-7"><CardTitle title="Upcoming Schedule"/><button className="absolute right-5 top-6 rounded-lg p-2 hover:bg-[var(--soft)]" aria-label="Schedule options"><EllipsisVertical size={19} className="muted"/></button><div className="mt-10 space-y-9">{state.events.slice(0,3).map((event,index)=><label key={event.id} className="grid cursor-pointer grid-cols-[24px_102px_minmax(0,1fr)] items-start gap-4"><input type="checkbox" className="mt-1 h-5 w-5 rounded-md accent-[#465fff]"/><span className="text-sm leading-5"><span className="muted block">{["Wed, 11 Jan","Fri, 15 Feb","Thu, 18 Mar"][index]}</span><span className="mt-1 block font-medium">{["09:20 AM","10:35 AM","1:15 AM"][index]}</span></span><span className="min-w-0 text-sm leading-5"><span className="block truncate font-medium">{["Business Analytics Press","Business Sprint","Customer Review Meeting"][index]}</span><small className="muted mt-2 block truncate text-xs">{["Exploring the Future of Data-Driven +6 more","Techniques from Business Sprint +2 more","Insights from the Customer Review Meeting +8 more"][index]}</small></span></label>)}</div></article>
+   <article className="panel relative h-fit px-6 py-7"><CardTitle title="Upcoming Schedule"/><button className="absolute right-5 top-6 rounded-lg p-2 hover:bg-[var(--soft)]" aria-label="Schedule options"><EllipsisVertical size={19} className="muted"/></button><div className="mt-10 space-y-9">{events.slice(0,3).map((event,index)=><label key={event.id} className="grid cursor-pointer grid-cols-[24px_102px_minmax(0,1fr)] items-start gap-4"><input type="checkbox" className="mt-1 h-5 w-5 rounded-md accent-[#465fff]"/><span className="text-sm leading-5"><span className="muted block">{["Wed, 11 Jan","Fri, 15 Feb","Thu, 18 Mar"][index]}</span><span className="mt-1 block font-medium">{["09:20 AM","10:35 AM","1:15 AM"][index]}</span></span><span className="min-w-0 text-sm leading-5"><span className="block truncate font-medium">{["Business Analytics Press","Business Sprint","Customer Review Meeting"][index]}</span><small className="muted mt-2 block truncate text-xs">{["Exploring the Future of Data-Driven +6 more","Techniques from Business Sprint +2 more","Insights from the Customer Review Meeting +8 more"][index]}</small></span></label>)}</div></article>
   </section>
   <section className="panel overflow-visible">
    <header className="flex flex-wrap items-center justify-between gap-4 px-6 py-5"><h2 className="text-[20px] font-semibold">Recent Orders</h2><div className="flex gap-3"><div className="relative"><button className="btn !px-4 !py-2.5 !font-normal" onClick={()=>setFilterOpen(v=>!v)} aria-expanded={filterOpen}><Filter size={17}/>Filter<ChevronDown size={15}/></button>{filterOpen&&<div className="panel absolute right-0 z-30 mt-2 w-44 p-2 shadow-xl" role="menu">{(["All","Complete","Pending","Cancel"] as const).map(option=><button key={option} className={`block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--soft)] ${status===option?"font-semibold text-[#465fff]":""}`} onClick={()=>{setStatus(option);setFilterOpen(false)}}>{option}</button>)}</div>}</div><button className="btn !px-4 !py-2.5 !font-normal" onClick={()=>setStatus("All")}>See all</button></div></header>

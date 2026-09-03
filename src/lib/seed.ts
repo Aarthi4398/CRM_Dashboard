@@ -15,21 +15,21 @@ export const seedState: CRMState = {
     {id:"co4",name:"Pixel Works",industry:"Agency",website:"pixelworks.demo",location:"Berlin, DE",value:31800,contactCount:4,status:"Prospect"},
   ],
   deals: [
-    {id:"d1",title:"Enterprise workspace",company:"Nova Labs",contact:"John Doe",value:18500,stage:"Won",probability:100,owner:"Aarthi",closeDate:"2026-08-28"},
-    {id:"d2",title:"Cloud migration",company:"Cloudly",contact:"Jane Smith",value:12990,stage:"Negotiation",probability:75,owner:"Aarthi",closeDate:"2026-09-04"},
-    {id:"d3",title:"Analytics rollout",company:"Vertex Co",contact:"Michael Brown",value:9500,stage:"Proposal",probability:55,owner:"Aarthi",closeDate:"2026-09-10"},
-    {id:"d4",title:"Brand platform",company:"Pixel Works",contact:"Alice Johnson",value:6230,stage:"Qualified",probability:35,owner:"Aarthi",closeDate:"2026-09-18"},
-    {id:"d5",title:"AI support suite",company:"Metric AI",contact:"Robert Lee",value:15200,stage:"Lead",probability:15,owner:"Aarthi",closeDate:"2026-09-25"},
+    {id:"d1",title:"Enterprise workspace",company:"Nova Labs",companyId:"co1",contact:"John Doe",contactId:"c1",value:18500,stage:"Won",probability:100,owner:"Aarthi",closeDate:"2026-08-28"},
+    {id:"d2",title:"Cloud migration",company:"Cloudly",companyId:"co2",contact:"Jane Smith",contactId:"c2",value:12990,stage:"Negotiation",probability:75,owner:"Aarthi",closeDate:"2026-09-04"},
+    {id:"d3",title:"Analytics rollout",company:"Vertex Co",companyId:"co3",contact:"Michael Brown",contactId:"c3",value:9500,stage:"Proposal",probability:55,owner:"Aarthi",closeDate:"2026-09-10"},
+    {id:"d4",title:"Brand platform",company:"Pixel Works",companyId:"co4",contact:"Alice Johnson",contactId:"c4",value:6230,stage:"Qualified",probability:35,owner:"Aarthi",closeDate:"2026-09-18"},
+    {id:"d5",title:"AI support suite",company:"Metric AI",contact:"Robert Lee",contactId:"c5",value:15200,stage:"Lead",probability:15,owner:"Aarthi",closeDate:"2026-09-25"},
   ],
   tasks: [
-    {id:"t1",title:"Prepare Nova proposal",description:"Finalize pricing and rollout milestones.",priority:"High",status:"In progress",dueDate:"2026-08-26",relatedTo:"Nova Labs"},
-    {id:"t2",title:"Follow up with Cloudly",description:"Share security questionnaire answers.",priority:"Medium",status:"To do",dueDate:"2026-08-28",relatedTo:"Cloudly"},
+    {id:"t1",title:"Prepare Nova proposal",description:"Finalize pricing and rollout milestones.",priority:"High",status:"In progress",dueDate:"2026-08-26",relatedTo:"Nova Labs",relatedToId:"co1"},
+    {id:"t2",title:"Follow up with Cloudly",description:"Share security questionnaire answers.",priority:"Medium",status:"To do",dueDate:"2026-08-28",relatedTo:"Cloudly",relatedToId:"co2"},
     {id:"t3",title:"Update pipeline forecast",description:"Recheck probabilities for Q3 deals.",priority:"Low",status:"Done",dueDate:"2026-08-24",relatedTo:"Sales pipeline"},
   ],
   events: [
-    {id:"e1",title:"Customer review",date:"2026-08-26",time:"10:00",category:"Meeting",attendees:6,relatedTo:"Nova Labs"},
-    {id:"e2",title:"Cloudly discovery call",date:"2026-08-28",time:"14:30",category:"Call",attendees:3,relatedTo:"Cloudly"},
-    {id:"e3",title:"Proposal deadline",date:"2026-09-10",time:"17:00",category:"Deadline",attendees:2,relatedTo:"Vertex Co"},
+    {id:"e1",title:"Customer review",date:"2026-08-26",time:"10:00",category:"Meeting",attendees:6,relatedTo:"Nova Labs",relatedToId:"co1"},
+    {id:"e2",title:"Cloudly discovery call",date:"2026-08-28",time:"14:30",category:"Call",attendees:3,relatedTo:"Cloudly",relatedToId:"co2"},
+    {id:"e3",title:"Proposal deadline",date:"2026-09-10",time:"17:00",category:"Deadline",attendees:2,relatedTo:"Vertex Co",relatedToId:"co3"},
   ],
   profile: {name:"Aarthi Raman",role:"CRM Product Specialist",email:"aarthi@example.demo",phone:"+91 98765 43210",location:"Chennai, India",bio:"I design thoughtful CRM experiences that turn customer signals into clear actions."}
 };

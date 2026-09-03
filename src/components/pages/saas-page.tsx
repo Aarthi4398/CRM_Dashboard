@@ -5,7 +5,8 @@ import { AreaChart, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis
 import { TimedArea as Area, TimedBar as Bar } from "@/components/ui/timed-charts";
 import { CardTitle } from "@/components/ui/card-title";
 import { StatusBadge as Status } from "@/components/ui/status-badge";
-import { ArrowDown, ArrowUp, Flag, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Flag } from "lucide-react";
+import { TrendBadge } from "@/components/ui/trend-badge";
 
 const overview=[{label:"Total Revenue",value:"$200,45.87",change:"+2.5%"},{label:"Active Users",value:"9,528",change:"+9.5%"},{label:"Customer Lifetime Value",value:"$849.54",change:"-1.6%",down:true},{label:"Customer Acquisition Cost",value:"9,528",change:"+3.5%"}];
 const churn=[12,18,11,20,27,15,9,13,17,12,14,16].map((v,i)=>({i,v}));
@@ -31,5 +32,5 @@ export default function SaasPage(){const [productTab,setProductTab]=useState<key
  </div>}
 
 function MiniChart({title,subtitle,value,change,down=false,data}:{title:string;subtitle:string;value:string;change:string;down?:boolean;data:{i:number;v:number}[]}){return <article className="panel min-w-0 overflow-hidden p-5 sm:p-6"><CardTitle title={title}/><p className="muted mt-1 break-words text-sm">{subtitle}</p><div className="mt-5 grid min-w-0 grid-cols-1 items-end gap-3 min-[340px]:grid-cols-[minmax(0,1fr)_minmax(96px,120px)]"><div className="min-w-0"><p className="text-2xl font-semibold">{value}</p><p className={`mt-2 text-xs ${down?"text-red-500":"text-emerald-600"}`}>{change} <span className="muted">than last Week</span></p></div><div className="h-20 min-w-0 w-full"><ResponsiveContainer width="100%" height="100%"><AreaChart data={data}><defs><linearGradient id={`mini-${title.replaceAll(" ","")}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={down?"#ef4444":"#12b76a"} stopOpacity=".25"/><stop offset="1" stopColor={down?"#ef4444":"#12b76a"} stopOpacity="0"/></linearGradient></defs><Area animationDuration={1800} animationEasing="ease-in-out" type="monotone" dataKey="v" stroke={down?"#ef4444":"#12b76a"} strokeWidth={2} fill={`url(#mini-${title.replaceAll(" ","")})`} dot={false}/></AreaChart></ResponsiveContainer></div></div></article>}
-function Change({value,down=false,hideIcon=false,straightIcon=false}:{value:string;down?:boolean;hideIcon?:boolean;straightIcon?:boolean}){return <span className={`badge ${down?"bg-red-50 text-red-500":"bg-emerald-50 text-emerald-600"}`}>{hideIcon?null:straightIcon?(down?<ArrowDown size={12}/>:<ArrowUp size={12}/>):down?<TrendingDown size={12}/>:<TrendingUp size={12}/>} {value}</span>}
+function Change({value,down=false,hideIcon=false,straightIcon=false}:{value:string;down?:boolean;hideIcon?:boolean;straightIcon?:boolean}){return <TrendBadge value={value} down={down} iconStyle={hideIcon?"none":straightIcon?"arrow":"trend"}/>}
 function SmallMetric({label,value,down=false}:{label:string;value:string;down?:boolean}){return <div className="p-4"><p className="muted text-sm">{label}</p><p className="mt-1 flex items-center gap-2 text-xl font-semibold">{down?<ArrowDown className="text-red-500" size={15} strokeWidth={2}/>:<ArrowUp className="text-emerald-600" size={15} strokeWidth={2}/>} {value}</p></div>}

@@ -17,27 +17,29 @@ function AlertSection({title,tone,message,icon:Icon}:{title:string;tone:string;m
 
 const cardText="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi architecto aspernatur cum et ipsum";
 export function CardsPage(){return <><Head title="Cards"/><div className="cards-reference-page">
- <CardShowcase title="Card with Image"><div className="cards-image-grid"><ReferenceImageCard image={1} title button/><ReferenceImageCard image={2} button/><ReferenceImageCard image={3} title link/></div></CardShowcase>
- <CardShowcase title="Horizontal Card with Image"><div className="cards-horizontal-grid"><ReferenceHorizontalCard image={1} button/><ReferenceHorizontalCard image={3} link/></div></CardShowcase>
- <CardShowcase title="Card with link"><div className="cards-link-grid"><ReferenceTextCard button/><ReferenceTextCard link/></div></CardShowcase>
+ <CardShowcase title="Card with Image"><div className="cards-image-grid"><ReferenceImageCard image={1} appearance="title-button"/><ReferenceImageCard image={2} appearance="button"/><ReferenceImageCard image={3} appearance="title-link"/></div></CardShowcase>
+ <CardShowcase title="Horizontal Card with Image"><div className="cards-horizontal-grid"><ReferenceHorizontalCard image={1} appearance="title-button"/><ReferenceHorizontalCard image={3} appearance="title-link"/></div></CardShowcase>
+ <CardShowcase title="Card with link"><div className="cards-link-grid"><ReferenceTextCard appearance="title-button"/><ReferenceTextCard appearance="title-link"/></div></CardShowcase>
  <CardShowcase title="Card with Icon"><div className="cards-icon-grid"><ReferenceIconCard/><ReferenceIconCard link/></div></CardShowcase>
  </div></>}
 function CardShowcase({title,children}:{title:string;children:React.ReactNode}){return <section className="card-showcase"><header><h2>{title}</h2></header><div>{children}</div></section>}
-function CardBody({title=true,button=false,link=false}:{title?:boolean;button?:boolean;link?:boolean}){return <div className="reference-card-body">{title?<h3>Card title</h3>:null}<p>{cardText}</p>{button?<a className="reference-card-button" href="#" onClick={event=>event.preventDefault()}>Read more</a>:null}{link?<a className="reference-card-link" href="#" onClick={event=>event.preventDefault()}><Link2/>Card link</a>:null}</div>}
-function ReferenceImageCard({image,title=false,button=false,link=false}:{image:number;title?:boolean;button?:boolean;link?:boolean}){return <article className="reference-image-card"><Image width={640} height={360} src={asset(`/images/cards/card-0${image}.png`)} alt="card"/><CardBody title={title} button={button} link={link}/></article>}
-function ReferenceHorizontalCard({image,button=false,link=false}:{image:number;button?:boolean;link?:boolean}){return <article className="reference-horizontal-card"><Image width={640} height={360} src={asset(`/images/cards/card-0${image}.png`)} alt="card"/><CardBody button={button} link={link}/></article>}
-function ReferenceTextCard({button=false,link=false}:{button?:boolean;link?:boolean}){return <article className="reference-text-card"><CardBody button={button} link={link}/></article>}
+type CardAppearance="title-button"|"button"|"title-link";
+function CardBody({appearance}:{appearance:CardAppearance}){const title=appearance!=="button";const button=appearance.endsWith("button");return <div className="reference-card-body">{title?<h3>Card title</h3>:null}<p>{cardText}</p>{button?<a className="reference-card-button" href="#" onClick={event=>event.preventDefault()}>Read more</a>:<a className="reference-card-link" href="#" onClick={event=>event.preventDefault()}><Link2/>Card link</a>}</div>}
+function ReferenceImageCard({image,appearance}:{image:number;appearance:CardAppearance}){return <article className="reference-image-card"><Image width={640} height={360} src={asset(`/images/cards/card-0${image}.png`)} alt="card"/><CardBody appearance={appearance}/></article>}
+function ReferenceHorizontalCard({image,appearance}:{image:number;appearance:CardAppearance}){return <article className="reference-horizontal-card"><Image width={640} height={360} src={asset(`/images/cards/card-0${image}.png`)} alt="card"/><CardBody appearance={appearance}/></article>}
+function ReferenceTextCard({appearance}:{appearance:CardAppearance}){return <article className="reference-text-card"><CardBody appearance={appearance}/></article>}
 function ReferenceIconCard({link=false}:{link?:boolean}){return <article className="reference-icon-card"><span><Box/></span><h3>Card title</h3><p>{cardText}</p>{link?<a href="#" onClick={event=>event.preventDefault()}>Read more <ArrowRight/></a>:null}</article>}
 
 const carouselImages=[1,2,3,4].map(index=>asset(`/images/carousel/carousel-0${index}.png`));
 export function CarouselPage(){return <><Head title="Carousel"/><main className="carousel-reference-page">
- <CarouselCard title="Slides Only"><PremiumCarousel/></CarouselCard>
- <CarouselCard title="With controls"><PremiumCarousel controls/></CarouselCard>
- <CarouselCard title="With indicators"><PremiumCarousel indicators/></CarouselCard>
- <CarouselCard title="With controls and indicators"><PremiumCarousel controls indicators compactControls/></CarouselCard>
+ <CarouselCard title="Slides Only"><PremiumCarousel features="none"/></CarouselCard>
+ <CarouselCard title="With controls"><PremiumCarousel features="controls"/></CarouselCard>
+ <CarouselCard title="With indicators"><PremiumCarousel features="indicators"/></CarouselCard>
+ <CarouselCard title="With controls and indicators"><PremiumCarousel features="both-compact"/></CarouselCard>
  </main></>}
 function CarouselCard({title,children}:{title:string;children:React.ReactNode}){return <section className="carousel-card"><header><h2>{title}</h2></header><div className="carousel-card-body">{children}</div></section>}
-function PremiumCarousel({controls=false,indicators=false,compactControls=false}:{controls?:boolean;indicators?:boolean;compactControls?:boolean}){
+function PremiumCarousel({features}:{features:"none"|"controls"|"indicators"|"both-compact"}){
+ const controls=features==="controls"||features==="both-compact",indicators=features==="indicators"||features==="both-compact",compactControls=features==="both-compact";
  const [active,setActive]=useState(0);
  useEffect(()=>{const timer=window.setInterval(()=>setActive(value=>(value+1)%carouselImages.length),4500);return()=>window.clearInterval(timer)},[]);
  const move=(amount:number)=>setActive(value=>(value+amount+carouselImages.length)%carouselImages.length);

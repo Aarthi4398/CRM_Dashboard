@@ -1,1 +1,1 @@
-import {ComingSoonPage} from "@/components/status-page"; export default function Page(){return <ComingSoonPage/>}
+import {ComingSoonPage} from "@/components/coming-soon-page"; export default function Page(){return <ComingSoonPage/>}
