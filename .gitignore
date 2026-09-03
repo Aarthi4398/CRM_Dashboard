@@ -20,3 +20,4 @@ output/
 *.tsbuildinfo
 
 .vercel
+.graphify-venv/
