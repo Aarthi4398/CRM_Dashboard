@@ -42,8 +42,8 @@ export function Dashboard(){
  const toggleAll=()=>setSelected(allSelected?selected.filter(id=>!visibleOrders.some(o=>o.id===id)):[...new Set([...selected,...visibleOrders.map(o=>o.id)])]);
  return <div className="dashboard-page space-y-6">
   <section className="grid gap-6 xl:grid-cols-3">
-   <Metric value={`$${active.reduce((sum,d)=>sum+d.value,0).toLocaleString()}`} label="Active Deal" change="+20%" positive/>
-   <Metric value={`$${won.reduce((sum,d)=>sum+d.value,0).toLocaleString()}`} label="Revenue Total" change="+9.0%" positive/>
+   <Metric value={`$${active.reduce((sum,d)=>sum+d.value,0).toLocaleString("en-US")}`} label="Active Deal" change="+20%" positive/>
+   <Metric value={`$${won.reduce((sum,d)=>sum+d.value,0).toLocaleString("en-US")}`} label="Revenue Total" change="+9.0%" positive/>
    <Metric value="874" label="Closed Deals" change="-4.5%"/>
   </section>
   <section className="grid gap-6 xl:grid-cols-3">

@@ -1,0 +1,6 @@
+.route-file-manager h3{font-size:14px;line-height:20px}
+@media(min-width:1280px){
+  .route-file-manager>div>div.grid.items-start{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .route-file-manager>div>div.grid.items-start>section:first-child{grid-column:span 8/span 8}
+  .route-file-manager>div>div.grid.items-start>section:last-child{grid-column:span 4/span 4}
+}

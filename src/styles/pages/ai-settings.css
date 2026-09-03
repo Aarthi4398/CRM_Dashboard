@@ -1,0 +1,54 @@
+.route-ai-settings .ai-settings-page h1{font-size:24px;line-height:32px;font-weight:600}.route-ai-settings .ai-settings-page h2{font-size:12px;line-height:16px;font-weight:500}
+.route-ai-settings .ai-settings-page aside nav button{height:36px;font-size:14px;line-height:20px;font-weight:500}
+.route-ai-settings .ai-settings-page aside nav>section>p{font-size:11px;line-height:16px;font-weight:500}
+.route-ai-settings .ai-settings-title{padding-bottom:0;border-bottom:0}
+.route-ai-settings .upload-avatar-btn{font-size:12px;font-weight:400}
+.route-ai-settings .ai-settings-content section>div{background:var(--card)}
+.route-ai-settings .ai-settings-content :is(.settings-inline-row,.range-row,.choice-row){min-height:86px;border-bottom:1px solid var(--border);padding:20px 24px}
+.route-ai-settings .ai-settings-content :is(.settings-inline-row,.range-row,.choice-row):last-child{border-bottom:0}
+.route-ai-settings .ai-settings-content :is(.settings-inline-row,.range-row,.choice-row) p{font-size:14px;line-height:20px;font-weight:500;color:var(--text)}
+.route-ai-settings .ai-settings-content :is(.settings-inline-row,.range-row,.choice-row) small{display:block;margin-top:2px;font-size:12px;line-height:18px;color:var(--muted)}
+.route-ai-settings .settings-inline-row{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.route-ai-settings .theme-row{min-height:120px!important}
+.route-ai-settings .theme-row>div:last-child{display:flex;gap:10px}
+.route-ai-settings .theme-row button{width:116px;height:80px;display:grid;place-items:center;align-content:center;gap:4px;border:1px solid var(--border);border-radius:10px;background:var(--card);font-size:13px}
+.route-ai-settings .theme-row button.active{background:var(--soft);color:var(--text)}
+.route-ai-settings .dropdown-row .dropdown>button{min-width:126px;justify-content:space-between;background:var(--card)}
+.route-ai-settings .choice-row>div:last-child{display:flex;flex-wrap:wrap;gap:10px}
+.route-ai-settings .choice-row:not(.settings-inline-row)>div:last-child{margin-top:12px}
+.route-ai-settings .choice-row button{height:44px;padding:0 18px;border:1px solid var(--border);border-radius:10px;background:var(--card);font-size:14px;font-weight:500}
+.route-ai-settings .choice-row button.active{color:#465fff}
+.route-ai-settings .settings-inline-row.choice-row>div:last-child{padding:5px;border-radius:10px;background:var(--soft);gap:0}
+.route-ai-settings .settings-inline-row.choice-row button{height:40px;border:0;background:transparent}
+.route-ai-settings .settings-inline-row.choice-row button.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgb(16 24 40/.1)}
+.route-ai-settings .range-row{display:block}
+.route-ai-settings .range-control{display:flex;flex-direction:column-reverse;gap:10px}
+.route-ai-settings .range-control b{align-self:flex-end;font-size:14px;font-weight:500}
+.route-ai-settings .range-control input{width:100%;accent-color:#465fff}
+.route-ai-settings .inline-range .range-control{width:275px;display:grid;grid-template-columns:1fr 42px;align-items:center;gap:12px}
+.route-ai-settings .inline-range .range-control b{grid-column:2;grid-row:1;align-self:auto}
+.route-ai-settings .inline-range .range-control input{grid-column:1;grid-row:1}
+.route-ai-settings .compact-choice{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.route-ai-settings .compact-choice>div:last-child{justify-content:flex-end}
+.route-ai-settings .compact-choice button{height:30px;padding:0 14px;border:0;border-radius:999px;background:var(--soft);color:var(--muted);font-size:12px;font-weight:400}
+.route-ai-settings .file-media-settings .choice-row>div:last-child{gap:10px;padding:0;background:transparent}
+.route-ai-settings .file-media-settings .compact-choice button,.route-ai-settings .file-media-settings .compact-choice button.active{background:var(--soft);color:var(--muted);box-shadow:none}
+.route-ai-settings .file-media-settings .choice-row:not(.compact-choice) button.active{border:1px solid var(--border);background:var(--card);color:#465fff;box-shadow:none}
+.route-ai-settings .credit-summary{margin:18px 14px 16px;padding:20px 24px;border-radius:12px;background:var(--soft)}
+.route-ai-settings .credit-title,.route-ai-settings .credit-daily{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.route-ai-settings .credit-title span{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.route-ai-settings .credit-title>b,.route-ai-settings .credit-daily>b{font-size:15px;font-weight:500}
+.route-ai-settings .credit-progress{height:8px;margin:14px 0 16px;border-radius:999px;background:#dce2ff;overflow:hidden}
+.route-ai-settings .credit-progress i{display:block;width:100%;height:100%;background:#465fff}
+.route-ai-settings .credit-daily span b,.route-ai-settings .credit-daily span small{display:block}.route-ai-settings .credit-daily span b{font-size:13px;font-weight:500}.route-ai-settings .credit-daily span small{margin-top:3px;color:var(--muted);font-size:12px}
+.route-ai-settings .invoice-link{font-size:14px;font-weight:400;color:var(--text)}
+.route-ai-settings .memory-actions{padding:18px 24px}
+.route-ai-settings .memory-actions>p{margin-bottom:14px;font-size:14px;font-weight:500}
+.route-ai-settings .memory-actions>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:7px;border-radius:14px;background:var(--soft)}
+.route-ai-settings .memory-actions button{height:102px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:20px;border:1px solid transparent;border-radius:12px;background:var(--card);color:var(--muted);font-size:14px;font-weight:500}
+.route-ai-settings .memory-actions button svg{width:21px}.route-ai-settings .memory-actions button.active{border-color:#465fff;color:#465fff}
+.route-ai-settings .delete-memory{border-color:#fda29b!important;color:#f04438!important;font-weight:400!important}
+@media(max-width:767px){.route-ai-settings .settings-inline-row,.route-ai-settings .compact-choice{align-items:flex-start;flex-direction:column}.route-ai-settings .theme-row>div:last-child{width:100%}.route-ai-settings .theme-row button{flex:1;width:auto}.route-ai-settings .inline-range .range-control{width:100%}.route-ai-settings .memory-actions>div{grid-template-columns:1fr}.route-ai-settings .memory-actions button{height:70px}.route-ai-settings .ai-settings-title{padding-bottom:16px}}
+@media(min-width:1280px){
+  .route-ai-settings>.ai-settings-page{width:calc(100% + 48px)}
+}

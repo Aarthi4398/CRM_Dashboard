@@ -1,82 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { AreaChart, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { TimedArea as Area, TimedBar as Bar } from "@/components/ui/timed-charts";
-import { StatusBadge as SharedStatus } from "@/components/ui/status-badge";
-import { StatCard } from "@/components/ui/stat-card";
-import { Box, CalendarDays, EllipsisVertical, SlidersHorizontal, Users } from "lucide-react";
+import dynamic from "next/dynamic";
+import { HeavyVisualLoading } from "@/components/ui/heavy-visual-loading";
 
-const monthlySales = [{m:"Jan",v:165},{m:"Feb",v:190},{m:"Mar",v:175},{m:"Apr",v:205},{m:"May",v:225},{m:"Jun",v:215},{m:"Jul",v:245},{m:"Aug",v:205},{m:"Sep",v:230},{m:"Oct",v:280},{m:"Nov",v:250},{m:"Dec",v:295}];
-const statistics = [{m:"Jan",sales:180,revenue:80},{m:"Feb",sales:190,revenue:90},{m:"Mar",sales:170,revenue:85},{m:"Apr",sales:205,revenue:105},{m:"May",sales:190,revenue:110},{m:"Jun",sales:230,revenue:125},{m:"Jul",sales:220,revenue:120},{m:"Aug",sales:250,revenue:145},{m:"Sep",sales:235,revenue:150},{m:"Oct",sales:270,revenue:165},{m:"Nov",sales:260,revenue:170},{m:"Dec",sales:290,revenue:185}];
-const products = [
-  {name:"MacBook Pro 13”",variants:"2 Variants",price:"$2,399.00",category:"Laptop",status:"Delivered",image:"/products/laptop.png"},
-  {name:"Apple Watch Ultra",variants:"1 Variant",price:"$879.00",category:"Watch",status:"Pending",image:"/products/watch.png"},
-  {name:"iPhone 15 Pro Max",variants:"2 Variants",price:"$1,869.00",category:"SmartPhone",status:"Delivered",image:"/products/phone.png"},
-  {name:"iPad Pro 3rd Gen",variants:"2 Variants",price:"$1,699.00",category:"Electronics",status:"Canceled",image:"/products/tablet.png"},
-  {name:"AirPods Pro 2nd Gen",variants:"1 Variant",price:"$240.00",category:"Accessories",status:"Delivered",image:"/products/earbuds.png"},
-];
+const EcommercePage = dynamic(() => import("@/components/pages/ecommerce-page"), {
+  loading: () => <HeavyVisualLoading label="Loading ecommerce charts" />,
+});
 
-export default function EcommercePage(){
-  const [period,setPeriod]=useState("Monthly");
-  const [filter,setFilter]=useState(false);
-  const [dateOpen,setDateOpen]=useState(false);
-  const [startDate,setStartDate]=useState("2025-01-01");
-  const [endDate,setEndDate]=useState("2025-12-31");
-  const factor=period==="Quarterly"?1.18:period==="Annually"?1.42:1;
-  const chartData=statistics.map(item=>({...item,sales:Math.round(item.sales*factor),revenue:Math.round(item.revenue*factor)}));
-  return <div className="ecommerce-page space-y-6">
-    <section className="grid items-start gap-6 xl:grid-cols-[1.7fr_1fr]">
-      <div className="space-y-6">
-        <div className="grid gap-5 sm:grid-cols-2"><Kpi icon={<Users size={20}/>} label="Customers" value="3,782" change="11.01%"/><Kpi icon={<Box size={20}/>} label="Orders" value="5,359" change="9.05%" down/></div>
-        <article className="ecommerce-monthly-sales panel px-6 pb-0 pt-6"><CardHeader title="Monthly Sales"/><div className="mt-4 h-[163px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={monthlySales} margin={{left:-25,right:4,bottom:0}}><CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3"/><XAxis dataKey="m" axisLine={false} tickLine={false} tick={{fill:"var(--muted)",fontSize:12}}/><YAxis axisLine={false} tickLine={false} tick={{fill:"var(--muted)",fontSize:12}}/><Tooltip contentStyle={{background:"var(--panel)",border:"1px solid var(--border)",borderRadius:10}}/><Bar animationDuration={1800} animationEasing="ease-in-out" dataKey="v" fill="#465fff" radius={[5,5,0,0]} maxBarSize={10}/></BarChart></ResponsiveContainer></div></article>
-      </div>
-      <article className="ecommerce-monthly-target panel overflow-hidden"><div className="ecommerce-target-main"><CardHeader title="Monthly Target" subtitle="Target you’ve set for each month"/><TargetGauge value={75.55}/><p className="muted ecommerce-target-copy mx-auto w-full max-w-[430px] text-center text-sm leading-6 sm:text-base">You earn $3,287 today, it’s higher than last month. Keep up your good work!</p></div><div className="ecommerce-target-footer grid grid-cols-3 bg-[var(--soft)] text-center"><TargetMini label="Target" value="$20K" down/><TargetMini label="Revenue" value="$20K"/><TargetMini label="Today" value="$20K"/></div></article>
-    </section>
-
-    <article className="panel overflow-hidden">
-      <div className="p-6">
-        <div className="flex flex-wrap items-start justify-between gap-5"><div><h2 className="text-xl font-semibold">Statistics</h2><p className="muted mt-1 text-sm">Target you’ve set for each month</p></div><div className="flex flex-wrap items-center gap-2"><div className="soft flex rounded-lg p-1">{["Monthly","Quarterly","Annually"].map(item=><button key={item} onClick={()=>setPeriod(item)} aria-pressed={period===item} className={`rounded-md px-4 py-2 text-sm ${period===item?"bg-[var(--panel)] font-semibold shadow-sm":"muted"}`}>{item}</button>)}</div><div className="relative"><button className="btn !p-2.5" onClick={()=>setDateOpen(value=>!value)} aria-label="Select date range" aria-expanded={dateOpen}><CalendarDays size={18}/></button>{dateOpen?<form className="panel absolute right-0 z-30 mt-2 grid w-72 gap-3 p-4 shadow-xl" onSubmit={event=>{event.preventDefault();setDateOpen(false)}}><label><span className="mb-1 block text-xs font-semibold">Start Date</span><input className="field" type="date" name="start-date" value={startDate} onChange={event=>setStartDate(event.target.value)}/></label><label><span className="mb-1 block text-xs font-semibold">End Date</span><input className="field" type="date" name="end-date" min={startDate} value={endDate} onChange={event=>setEndDate(event.target.value)}/></label><button className="btn btn-primary">Apply Date Range</button></form>:null}</div></div></div>
-        <p className="muted mt-4 text-xs">{formatDate(startDate)} – {formatDate(endDate)}</p>
-        <div className="mt-5 h-[293px]"><ResponsiveContainer width="100%" height="100%"><AreaChart data={chartData} margin={{left:-20,right:8}}><defs><linearGradient id="ecom-sales" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#465fff" stopOpacity={.22}/><stop offset="100%" stopColor="#465fff" stopOpacity={0}/></linearGradient></defs><CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3"/><XAxis dataKey="m" axisLine={false} tickLine={false} tick={{fill:"var(--muted)",fontSize:12}}/><YAxis axisLine={false} tickLine={false} tick={{fill:"var(--muted)",fontSize:12}}/><Tooltip contentStyle={{background:"var(--panel)",border:"1px solid var(--border)",borderRadius:10}}/><Area animationDuration={1800} animationEasing="ease-in-out" type="monotone" dataKey="sales" stroke="#465fff" strokeWidth={2} fill="url(#ecom-sales)" dot={false}/><Area animationDuration={1800} animationEasing="ease-in-out" type="monotone" dataKey="revenue" stroke="#9cb1ff" strokeWidth={2} fill="transparent" dot={false}/></AreaChart></ResponsiveContainer></div>
-      </div>
-    </article>
-
-    <section className="grid items-start gap-6 xl:grid-cols-[minmax(360px,.85fr)_minmax(0,1.65fr)]">
-      <article className="ecommerce-demographic panel p-6"><CardHeader title="Customers Demographic" subtitle="Number of customers based on country"/><WorldMap/><MapMarkers/><div className="mt-5 space-y-4"><Country flag={<UsFlag/>} name="USA" customers="2,379 Customers" percent={79}/><Country flag={<FranceFlag/>} name="France" customers="589 Customers" percent={23}/></div></article>
-      <article className="ecommerce-recent-orders panel overflow-hidden">
-        <header className="ecommerce-orders-header flex items-center justify-between gap-4">
-          <h2 className="text-[18px] font-semibold">Recent Orders</h2>
-          <div className="flex shrink-0 gap-3">
-            <div className="relative">
-              <button className="btn ecommerce-filter-button !font-normal" onClick={()=>setFilter(v=>!v)} aria-expanded={filter}><SlidersHorizontal size={18}/>Filter</button>
-              {filter?<div className="panel absolute right-0 z-20 mt-2 w-36 p-2 shadow-xl"><button className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--soft)]" onClick={()=>setFilter(false)}>All Orders</button><button className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--soft)]" onClick={()=>setFilter(false)}>Delivered</button></div>:null}
-            </div>
-            <button className="btn ecommerce-see-all !font-normal">See all</button>
-          </div>
-        </header>
-        <div className="table-wrap ecommerce-orders-table-wrap">
-          <table className="data-table">
-            <thead><tr><th>Products</th><th>Category</th><th>Price</th><th>Status</th></tr></thead>
-            <tbody>{products.map(product=><tr key={product.name}><td><div className="flex min-w-44 items-center gap-4"><span className="grid h-[50px] w-[50px] shrink-0 place-items-center overflow-hidden rounded-md"><Image src={product.image} alt={product.name} width={50} height={50} className="h-full w-full object-contain"/></span><div><p className="text-[14px] font-medium">{product.name}</p><p className="muted mt-0.5 text-[12px]">{product.variants}</p></div></div></td><td className="font-normal tabular-nums">{product.price}</td><td>{product.category}</td><td><Status value={product.status}/></td></tr>)}</tbody>
-          </table>
-        </div>
-      </article>
-    </section>
-  </div>
-}
-
-function Kpi({icon,label,value,change,down=false}:{icon:React.ReactNode;label:string;value:string;change:string;down?:boolean}){return <StatCard icon={icon} label={label} value={value} change={change} down={down} trendIcon={<TrendArrow down={down}/>} variant="ecommerce"/>}
-function CardHeader({title,subtitle}:{title:string;subtitle?:string}){return <div className="flex items-start justify-between gap-4"><div><h2 className="text-xl font-semibold">{title}</h2>{subtitle?<p className="muted mt-1 text-sm">{subtitle}</p>:null}</div><button className="rounded-lg p-2 hover:bg-[var(--soft)]" aria-label={`${title} options`}><EllipsisVertical size={18}/></button></div>}
-function TargetGauge({value}:{value:number}){return <div className="ecommerce-target-gauge relative mx-auto w-full max-w-[323px] text-center"><svg viewBox="0 0 323 156" className="block h-auto w-full" role="img" aria-label={`${value}% of monthly target`}><path d="M 25.592316 149.609618 A 136.426829 136.426829 0 0 1 297.407684 149.609618" fill="none" stroke="rgba(228,231,236,.85)" strokeWidth="10.7560976" strokeLinecap="round"/><path className="ecommerce-gauge-progress" pathLength="100" d="M 25.592316 149.609618 A 136.426829 136.426829 0 0 1 254.542874 61.723733" fill="none" stroke="rgba(70,95,255,.85)" strokeWidth="10.7560976" strokeLinecap="round" strokeDasharray="100"/><text x="161.5" y="121.5" textAnchor="middle" fontSize="36" fontWeight="600" fill="var(--text)">{value}%</text></svg><span className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-[95%] rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">+10%</span></div>}
-function TargetMini({label,value,down=false}:{label:string;value:string;down?:boolean}){return <div className="ecommerce-target-mini"><p className="muted text-sm">{label}</p><p className="mt-2 inline-flex items-center gap-1.5 text-xl font-semibold tabular-nums">{value}<TrendArrow down={down}/></p></div>}
-function TrendArrow({down=false}:{down?:boolean}){return <svg width="13" height="12" viewBox="0 0 13 12" fill="none" className={down?"rotate-180 text-red-500":"text-emerald-600"} aria-hidden="true"><path fill="currentColor" fillRule="evenodd" d="M6.065 1.624a.75.75 0 0 1 .558-.25h.001c.192 0 .384.073.531.22l3 2.998a.75.75 0 1 1-1.06 1.06l-1.722-1.72v6.193a.75.75 0 0 1-1.5 0v-6.19L4.155 5.654a.75.75 0 0 1-1.06-1.061z" clipRule="evenodd"/></svg>}
-function formatDate(value:string){if(!value)return "Choose date";return new Intl.DateTimeFormat("en",{dateStyle:"medium"}).format(new Date(`${value}T00:00:00`))}
-function MapMarkers(){return <div className="ecommerce-map-markers" aria-label="Customer locations"><MapMarker name="United States" x="18%" y="43%"/><MapMarker name="France" x="44%" y="35%"/><MapMarker name="India" x="67%" y="50%"/><MapMarker name="Australia" x="79%" y="70%"/></div>}
-function MapMarker({name,x,y}:{name:string;x:string;y:string}){return <button type="button" className="ecommerce-map-marker" style={{left:x,top:y}} aria-label={name}><span>{name}</span></button>}
-function WorldMap(){return <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--soft)] p-3"><svg viewBox="0 0 760 390" className="h-[185px] w-full" role="img" aria-label="Customer locations around the world"><defs><pattern id="map-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0v24" fill="none" stroke="var(--border)" strokeWidth="1" opacity=".45"/></pattern><filter id="map-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#465fff" floodOpacity=".24"/></filter></defs><rect width="760" height="390" rx="22" fill="url(#map-grid)"/><g fill="#d6dae3" stroke="var(--panel)" strokeWidth="3"><path d="M52 111l24-35 56-28 71 5 39 24 34 2 19 28-26 21-28-8-20 23-14 44-27 22-31-6-15-32-32-13-22-28-27-2z"/><path d="M228 211l37 12 24 29-3 45-22 56-25-8-10-44-21-38z"/><path d="M319 92l19-18 49-4 25 15-8 23-36 12-27-8z"/><path d="M345 128l41-16 38 8 21 34-8 43-25 64-28 19-22-36-4-51-30-31z"/><path d="M420 104l42-42 74-15 80 18 65 36 25 36-22 27-46-1-27 22-42-5-28-28-35 3-34-20z"/><path d="M568 194l34 8 23 36-13 29-28-11-18-36z"/><path d="M635 270l41-18 38 12 16 27-22 32-54-5-25-22z"/><path d="M706 181l20 5 11 19-15 13-17-15z"/></g><g filter="url(#map-shadow)"><g><circle cx="154" cy="139" r="14" fill="#465fff" opacity=".18"/><circle cx="154" cy="139" r="6" fill="#465fff" stroke="#fff" strokeWidth="3"/></g><g><circle cx="375" cy="133" r="14" fill="#465fff" opacity=".18"/><circle cx="375" cy="133" r="6" fill="#465fff" stroke="#fff" strokeWidth="3"/></g><g><circle cx="514" cy="170" r="14" fill="#465fff" opacity=".18"/><circle cx="514" cy="170" r="6" fill="#465fff" stroke="#fff" strokeWidth="3"/></g><g><circle cx="669" cy="286" r="14" fill="#465fff" opacity=".18"/><circle cx="669" cy="286" r="6" fill="#465fff" stroke="#fff" strokeWidth="3"/></g></g></svg></div>}
-function UsFlag(){return <svg viewBox="0 0 32 32" className="h-9 w-9 rounded-full" role="img" aria-label="United States flag"><defs><clipPath id="us-flag"><circle cx="16" cy="16" r="16"/></clipPath></defs><g clipPath="url(#us-flag)"><path fill="#fff" d="M0 0h32v32H0z"/>{[2,6,10,14,18,22,26,30].map(y=><path key={y} fill="#e11d48" d={`M0 ${y}h32v2H0z`}/>) }<path fill="#1d4ed8" d="M0 0h15v15H0z"/><g fill="#fff">{[3,7,11].flatMap(y=>[3,7,11].map(x=><circle key={`${x}-${y}`} cx={x} cy={y} r=".8"/>))}</g></g></svg>}
-function FranceFlag(){return <svg viewBox="0 0 32 32" className="h-9 w-9 rounded-full" role="img" aria-label="France flag"><defs><clipPath id="fr-flag"><circle cx="16" cy="16" r="16"/></clipPath></defs><g clipPath="url(#fr-flag)"><path fill="#1d4ed8" d="M0 0h11v32H0z"/><path fill="#fff" d="M11 0h10v32H11z"/><path fill="#ef4444" d="M21 0h11v32H21z"/></g></svg>}
-function Country({flag,name,customers,percent}:{flag:React.ReactNode;name:string;customers:string;percent:number}){return <div className="grid grid-cols-[32px_minmax(110px,1fr)_100px_30px] items-center gap-2"><span className="grid h-8 w-8 shrink-0 place-items-center [&>svg]:h-8 [&>svg]:w-8">{flag}</span><div><p className="text-[13px] font-semibold leading-4">{name}</p><p className="muted whitespace-nowrap text-[11px] leading-4">{customers}</p></div><div className="h-1.5 rounded-full bg-[var(--soft)]"><div className="h-1.5 rounded-full bg-[#465fff]" style={{width:`${percent}%`}}/></div><b className="text-right text-xs">{percent}%</b></div>}
-function Status({value}:{value:string}){return <SharedStatus value={value} className="mt-1"/>}
+export default function EcommerceLazyRoute() { return <EcommercePage />; }

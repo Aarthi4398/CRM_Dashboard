@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/unit/*.test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "node scripts/run-playwright.mjs test",
+    "test:e2e:install": "node scripts/run-playwright.mjs install chromium"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -1,10 +1,19 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { ChevronRight, Plus, Search } from "lucide-react";
-import { Charts } from "./catalog-charts";
 import { BasicTables, DataTables } from "./catalog-tables";
 import { AlertsPage, CardsPage, CarouselPage, DropdownsPage, PaginationPage, PopoversPage, TabsPage } from "./catalog-showcases";
 import { AdvancedGenerator, Generator } from "./catalog-generators";
-import { Layouts, Maps } from "./catalog-layouts-maps";
+import { Layouts } from "./catalog-layouts-maps";
 import { Elements } from "./catalog-elements";
+
+const Charts = dynamic(() => import("./catalog-charts").then((module) => module.Charts), {
+ loading: () => <CatalogVisualLoading label="Loading chart examples"/>,
+});
+const Maps = dynamic(() => import("./catalog-maps").then((module) => module.Maps), {
+ loading: () => <CatalogVisualLoading label="Loading maps"/>,
+});
 
 const generators=new Set(["text-generator","image-generator","code-generator","video-generator"]);
 const layouts=new Set(["layout-one","layout-two","layout-three","layout-four","layout-five","layout-six"]);
@@ -31,3 +40,4 @@ export function CatalogPage({slug,title}:{slug:string;title:string}){
 }
 function Head({title}:{title:string}){return <header className="catalog-head"><h1>{title}</h1><div>Home <ChevronRight/> <b>{title}</b></div></header>}
 function Card({title,children,className=""}:{title:string;children:React.ReactNode;className?:string}){return <section className={`catalog-card ${className}`}><h2>{title}</h2><div>{children}</div></section>}
+function CatalogVisualLoading({label}:{label:string}){return <div className="grid gap-6" role="status" aria-label={label}><span className="sr-only">{label}</span><div className="catalog-card h-[430px] animate-pulse bg-[var(--soft)]" aria-hidden="true"/></div>}
