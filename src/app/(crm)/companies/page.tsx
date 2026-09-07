@@ -3,14 +3,16 @@
 import { Modal } from "@/components/modal";
 import { useFeedback } from "@/components/ui/app-feedback";
 import { PageHeader as Header } from "@/components/ui/page-header";
+import { SearchField } from "@/components/ui/search-field";
 import { TextInputField as Input } from "@/components/ui/text-input-field";
+import { useEntityModal } from "@/hooks/use-entity-modal";
 import { deleteCompany, upsertCompany, validateCompanyDraft } from "@/lib/crm";
 import { useCRMActions, useCRMSelector } from "@/lib/store";
 import type { Company } from "@/lib/types";
-import { Building2, ExternalLink, MapPin, Pencil, Plus, Search, Trash2, Users } from "lucide-react";
+import { Building2, ExternalLink, MapPin, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 
-type CompanyForm = {
+type CompanyDraft = {
   name: string;
   industry: string;
   website: string;
@@ -19,7 +21,7 @@ type CompanyForm = {
   status: Company["status"];
 };
 
-const blank: CompanyForm = {
+const blankDraft: CompanyDraft = {
   name: "",
   industry: "",
   website: "",
@@ -28,15 +30,24 @@ const blank: CompanyForm = {
   status: "Prospect",
 };
 
+function companyToDraft(company: Company): CompanyDraft {
+  return {
+    name: company.name,
+    industry: company.industry,
+    website: company.website,
+    location: company.location,
+    value: company.value,
+    status: company.status,
+  };
+}
+
 export default function CompaniesPage() {
   const companies = useCRMSelector((state) => state.companies);
   const { setState } = useCRMActions();
   const { confirmAction, toast } = useFeedback();
   const [query, setQuery] = useState("");
   const [industry, setIndustry] = useState("All");
-  const [modal, setModal] = useState<"add" | "edit" | null>(null);
-  const [selected, setSelected] = useState<Company | null>(null);
-  const [form, setForm] = useState<CompanyForm>(blank);
+  const modal = useEntityModal<Company, CompanyDraft>({ blankDraft, toDraft: companyToDraft });
 
   const industries = ["All", ...new Set(companies.map((company) => company.industry))];
   const list = useMemo(
@@ -49,33 +60,18 @@ export default function CompaniesPage() {
     [companies, industry, query],
   );
 
-  const open = (kind: "add" | "edit", company?: Company) => {
-    setSelected(company ?? null);
-    setForm(
-      company
-        ? {
-            name: company.name,
-            industry: company.industry,
-            website: company.website,
-            location: company.location,
-            value: company.value,
-            status: company.status,
-          }
-        : blank,
-    );
-    setModal(kind);
-  };
-
   const save = (event: React.FormEvent) => {
     event.preventDefault();
-    const error = validateCompanyDraft(form);
+    const error = validateCompanyDraft(modal.draft);
     if (error) {
       toast(error);
       return;
     }
-    setState((state) => upsertCompany(state, form, selected?.id));
-    setModal(null);
+    setState((state) => upsertCompany(state, modal.draft, modal.selected?.id));
+    modal.close();
   };
+
+  const modalTitle = modal.mode === "create" ? "Add company" : "Edit company";
 
   return (
     <div className="space-y-6">
@@ -83,7 +79,7 @@ export default function CompaniesPage() {
         title="Companies"
         subtitle={`${companies.length} accounts in your CRM`}
         action={
-          <button className="btn btn-primary" type="button" onClick={() => open("add")}>
+          <button className="btn btn-primary" type="button" onClick={modal.openCreate}>
             <Plus size={17} />
             Add company
           </button>
@@ -91,16 +87,13 @@ export default function CompaniesPage() {
       />
 
       <div className="panel flex flex-wrap gap-3 p-4">
-        <div className="relative min-w-64 flex-1">
-          <Search size={18} className="muted absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            className="field !pl-10"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search companies"
-            aria-label="Search companies"
-          />
-        </div>
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          placeholder="Search companies"
+          aria-label="Search companies"
+          className="relative min-w-64 flex-1"
+        />
         <select
           className="field !w-auto"
           value={industry}
@@ -126,7 +119,7 @@ export default function CompaniesPage() {
                 >
                   {company.status}
                 </span>
-                <IconButton label="Edit" onClick={() => open("edit", company)}>
+                <IconButton label="Edit" onClick={() => modal.openEdit(company)}>
                   <Pencil size={16} />
                 </IconButton>
                 <IconButton
@@ -185,28 +178,24 @@ export default function CompaniesPage() {
         )}
       </section>
 
-      <Modal
-        open={!!modal}
-        title={modal === "add" ? "Add company" : "Edit company"}
-        onClose={() => setModal(null)}
-      >
+      <Modal open={modal.isOpen} title={modalTitle} onClose={modal.close}>
         <form className="grid gap-4" onSubmit={save}>
-          <Input label="Company name" value={form.name} onChange={(value) => setForm((current) => ({ ...current, name: value }))} />
-          <Input label="Industry" value={form.industry} onChange={(value) => setForm((current) => ({ ...current, industry: value }))} />
-          <Input label="Website" value={form.website} onChange={(value) => setForm((current) => ({ ...current, website: value }))} />
-          <Input label="Location" value={form.location} onChange={(value) => setForm((current) => ({ ...current, location: value }))} />
+          <Input label="Company name" value={modal.draft.name} onChange={(value) => modal.setDraft((current) => ({ ...current, name: value }))} />
+          <Input label="Industry" value={modal.draft.industry} onChange={(value) => modal.setDraft((current) => ({ ...current, industry: value }))} />
+          <Input label="Website" value={modal.draft.website} onChange={(value) => modal.setDraft((current) => ({ ...current, website: value }))} />
+          <Input label="Location" value={modal.draft.location} onChange={(value) => modal.setDraft((current) => ({ ...current, location: value }))} />
           <Input
             label="Portfolio value"
             type="number"
-            value={String(form.value)}
-            onChange={(value) => setForm((current) => ({ ...current, value: Number(value) }))}
+            value={String(modal.draft.value)}
+            onChange={(value) => modal.setDraft((current) => ({ ...current, value: Number(value) }))}
           />
           <label>
             <span className="mb-1 block text-sm font-semibold">Status</span>
             <select
               className="field"
-              value={form.status}
-              onChange={(event) => setForm((current) => ({ ...current, status: event.target.value as Company["status"] }))}
+              value={modal.draft.status}
+              onChange={(event) => modal.setDraft((current) => ({ ...current, status: event.target.value as Company["status"] }))}
             >
               <option>Customer</option>
               <option>Prospect</option>
