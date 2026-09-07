@@ -1,7 +1,27 @@
 import type { CRMState } from "../types";
-import { isCRMState, normalizeCRMRelationships } from "../validate-state";
+import {
+  CRM_SCHEMA_VERSION,
+  CRM_STORAGE_KEY,
+  CRM_STORAGE_KEY_LEGACY,
+  isCRMStorageKey,
+  migrateParsedValue,
+  normalizeCRMRelationships,
+  parsePersistedCRMState,
+  parsePersistedCRMStateDetailed,
+  serializeCRMState,
+  shouldApplyStorageUpdate,
+} from "../validate-state";
 
-export const CRM_STORAGE_KEY = "aarthi-crm:v1";
+export {
+  CRM_SCHEMA_VERSION,
+  CRM_STORAGE_KEY,
+  CRM_STORAGE_KEY_LEGACY,
+  isCRMStorageKey,
+  parsePersistedCRMState,
+  parsePersistedCRMStateDetailed,
+  serializeCRMState,
+  shouldApplyStorageUpdate,
+};
 
 export type CRMRepository = {
   load(): CRMState | null;
@@ -13,26 +33,56 @@ export function createLocalStorageRepository(key = CRM_STORAGE_KEY): CRMReposito
   return {
     load() {
       try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return null;
-        const parsed: unknown = JSON.parse(raw);
-        if (!isCRMState(parsed)) {
-          console.warn("Ignoring invalid persisted CRM data.");
-          localStorage.removeItem(key);
+        const rawV2 = localStorage.getItem(CRM_STORAGE_KEY);
+        if (rawV2) {
+          const result = parsePersistedCRMStateDetailed(rawV2);
+          if (result.status === "unsupported_version") {
+            console.warn(
+              `Persisted CRM schema version ${result.version} is newer than supported version ${CRM_SCHEMA_VERSION}. `
+              + "Using seed state for this session without modifying stored data.",
+            );
+            return null;
+          }
+          if (result.status === "ok") {
+            if (result.migratedFrom !== undefined) {
+              localStorage.setItem(CRM_STORAGE_KEY, serializeCRMState(result.state));
+            }
+            return result.state;
+          }
+          console.warn("Unable to parse persisted CRM data in current storage key.");
           return null;
         }
-        return normalizeCRMRelationships(parsed);
+
+        const rawLegacy = localStorage.getItem(CRM_STORAGE_KEY_LEGACY);
+        if (!rawLegacy) return null;
+
+        const legacyResult = migrateParsedValue(JSON.parse(rawLegacy));
+        if (legacyResult.status === "unsupported_version") {
+          console.warn(
+            `Persisted CRM schema version ${legacyResult.version} is newer than supported version ${CRM_SCHEMA_VERSION}. `
+            + "Using seed state for this session without modifying stored data.",
+          );
+          return null;
+        }
+        if (legacyResult.status !== "ok") {
+          console.warn("Unable to parse legacy persisted CRM data.");
+          return null;
+        }
+
+        localStorage.setItem(CRM_STORAGE_KEY, serializeCRMState(legacyResult.state));
+        localStorage.removeItem(CRM_STORAGE_KEY_LEGACY);
+        return legacyResult.state;
       } catch (error) {
         console.warn("Unable to restore persisted CRM data.", error);
-        localStorage.removeItem(key);
         return null;
       }
     },
     save(state) {
-      localStorage.setItem(key, JSON.stringify(state));
+      localStorage.setItem(key, serializeCRMState(state));
     },
     clear() {
-      localStorage.removeItem(key);
+      localStorage.removeItem(CRM_STORAGE_KEY);
+      localStorage.removeItem(CRM_STORAGE_KEY_LEGACY);
     },
   };
 }
@@ -48,24 +98,4 @@ export function createMemoryRepository(initial: CRMState | null = null): CRMRepo
       value = null;
     },
   };
-}
-
-export function parsePersistedCRMState(raw: string | null): CRMState | null {
-  if (!raw) return null;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (!isCRMState(parsed)) return null;
-    return normalizeCRMRelationships(parsed);
-  } catch {
-    return null;
-  }
-}
-
-export function serializeCRMState(state: CRMState): string {
-  return JSON.stringify(state);
-}
-
-export function shouldApplyStorageUpdate(current: CRMState, incomingRaw: string | null): boolean {
-  if (!incomingRaw) return true;
-  return serializeCRMState(current) !== incomingRaw;
 }
