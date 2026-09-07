@@ -66,4 +66,52 @@ test("calendar event creation persists", async ({ page }) => {
   await page.reload();
   await expect(page.getByText("Playwright planning session", { exact: true })).toBeVisible();
 });
+
+test("company create, edit, persist, delete, and modal accessibility flow", async ({ page }) => {
+  await page.goto("/companies");
+  const addButton = page.getByRole("button", { name: "Add company" });
+  await addButton.click();
+  const dialog = page.getByRole("dialog", { name: "Add company" });
+  await expect(dialog).toBeVisible();
+
+  const initialFocus = await page.evaluate(() => {
+    const dialogElement = document.querySelector('[role="dialog"][aria-labelledby]');
+    const active = document.activeElement;
+    return Boolean(dialogElement && active && dialogElement.contains(active));
+  });
+  expect(initialFocus).toBe(true);
+
+  await dialog.getByLabel("Company name").fill("Playwright Corp");
+  await dialog.getByLabel("Industry", { exact: true }).fill("Testing");
+  await dialog.getByLabel("Website").fill("playwright.demo");
+  await dialog.getByLabel("Location").fill("Remote");
+  await dialog.getByLabel("Portfolio value").fill("25000");
+  await dialog.getByRole("button", { name: "Save company" }).click();
+  const card = page.locator("article").filter({ hasText: "Playwright Corp" });
+  await expect(card).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Playwright Corp", { exact: true })).toBeVisible();
+
+  await card.getByRole("button", { name: "Edit" }).click();
+  const editDialog = page.getByRole("dialog", { name: "Edit company" });
+  await expect(editDialog).toBeVisible();
+  await editDialog.getByLabel("Industry", { exact: true }).fill("Quality Assurance");
+  await editDialog.getByRole("button", { name: "Save company" }).click();
+  await expect(card).toContainText("Quality Assurance");
+
+  await card.getByRole("button", { name: "Delete" }).click();
+  await page.getByRole("dialog", { name: "Delete company" }).getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByText("Playwright Corp", { exact: true })).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByText("Playwright Corp", { exact: true })).toHaveCount(0);
+});
+
+test("company delete is blocked when related records exist", async ({ page }) => {
+  await page.goto("/companies");
+  const card = page.locator("article").filter({ hasText: "Nova Labs" });
+  await card.getByRole("button", { name: "Delete" }).click();
+  await page.getByRole("dialog", { name: "Delete company" }).getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByRole("status")).toContainText(/Cannot delete Nova Labs/);
+  await expect(page.getByText("Nova Labs", { exact: true })).toBeVisible();
+});
 });
