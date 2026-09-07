@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { ChevronRight, Plus, Search } from "lucide-react";
+import { TabsPage } from "./catalog-showcases";
 
 const CatalogVisualLoading = ({ label }: { label: string }) => (
   <div className="grid gap-6" role="status" aria-label={label}>
@@ -33,9 +34,6 @@ const PaginationPage = dynamic(() => import("./catalog-showcases").then((module)
   loading: () => <CatalogVisualLoading label="Loading UI examples" />,
 });
 const PopoversPage = dynamic(() => import("./catalog-showcases").then((module) => module.PopoversPage), {
-  loading: () => <CatalogVisualLoading label="Loading UI examples" />,
-});
-const TabsPage = dynamic(() => import("./catalog-showcases").then((module) => module.TabsPage), {
   loading: () => <CatalogVisualLoading label="Loading UI examples" />,
 });
 const AdvancedGenerator = dynamic(() => import("./catalog-generators").then((module) => module.AdvancedGenerator), {
