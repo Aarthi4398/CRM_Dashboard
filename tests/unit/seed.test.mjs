@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { seedState } from "../../src/lib/seed.ts";
-import { contentSecurityPolicy } from "../../src/lib/security-headers.ts";
+import { productionContentSecurityPolicy } from "../../src/lib/security-headers.ts";
 import { isCRMState, normalizeCRMRelationships } from "../../src/lib/validate-state.ts";
 
 test("CRM seed records remain connected across portfolio pages", () => {
@@ -39,9 +39,9 @@ test("new related records receive stable IDs when names match", () => {
 });
 
 test("CSP includes remote image, map, video, and local preview sources", () => {
-  assert.match(contentSecurityPolicy, /nextjs-demo\.tailadmin\.com/);
-  assert.match(contentSecurityPolicy, /openstreetmap\.org/);
-  assert.match(contentSecurityPolicy, /youtube\.com/);
-  assert.match(contentSecurityPolicy, /blob:/);
-  assert.match(contentSecurityPolicy, /data:/);
+  assert.match(productionContentSecurityPolicy, /nextjs-demo\.tailadmin\.com/);
+  assert.match(productionContentSecurityPolicy, /openstreetmap\.org/);
+  assert.match(productionContentSecurityPolicy, /youtube\.com/);
+  assert.match(productionContentSecurityPolicy, /blob:/);
+  assert.match(productionContentSecurityPolicy, /data:/);
 });

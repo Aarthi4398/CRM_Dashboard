@@ -12,5 +12,8 @@ test("CSP allows required remote media while remaining present", async ({ page }
   expect(csp).toContain("https://www.youtube.com");
   expect(csp).toContain("blob:");
   expect(csp).toContain("data:");
+  expect(csp).toContain("style-src-attr 'unsafe-inline'");
+  expect(csp).toContain("ws://localhost:*");
+  expect(csp).not.toMatch(/connect-src[^;]*\bws:\b/);
   await expect(page.locator("main").first()).toBeVisible();
 });
