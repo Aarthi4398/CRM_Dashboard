@@ -1,3 +1,4 @@
+/* Generator pages: later blocks win. Shared title/history chrome lives at the bottom. */
 .generator-text .generator-conversation>.prompt{background:#fff}
 .generator-text .generator-conversation>.prompt textarea{background:#fff;color:#101828}
 .generator-image>main{position:relative;height:100%;min-height:0;overflow:hidden}

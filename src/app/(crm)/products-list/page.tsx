@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, Download, Plus, Search, SlidersHorizontal } from "lucide-react";
+import "@/styles/pages/products-list.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";

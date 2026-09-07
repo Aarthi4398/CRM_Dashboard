@@ -28,6 +28,7 @@ test("premium date picker opens and clears its selected value", async ({ page })
 
 test("underline tabs expose tab semantics without underlining their text", async ({ page }) => {
   await page.goto("/tabs");
+  await expect(page.getByRole("heading", { name: "Tab With Underline" })).toBeVisible();
   const tab = page.getByRole("tab", { name: "Notification" }).first();
   await tab.click();
   await expect(tab).toHaveAttribute("aria-selected", "true");

@@ -1,4 +1,5 @@
 "use client";
+// Catalog demo board — not CRMState.tasks (/tasks is the connected CRM view).
 
 import { Modal } from "@/components/modal";
 import { AlignJustify, CalendarDays, Check, ChevronRight, MessageCircle, MoreHorizontal, Plus, SlidersHorizontal } from "lucide-react";

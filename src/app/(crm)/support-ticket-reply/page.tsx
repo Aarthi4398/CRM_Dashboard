@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Link2 } from "lucide-react";
+import "@/styles/pages/support-ticket-reply.css";
 import { useRef, useState } from "react";
 
 type Reply = { id: number; name: string; email: string; time: string; support?: boolean; body: React.ReactNode };

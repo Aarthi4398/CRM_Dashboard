@@ -3,49 +3,28 @@
 import { Check, ChevronDown, EllipsisVertical, SlidersHorizontal as Filter, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AreaChart, CartesianGrid, Cell, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { recentOrders, salesCategories, statisticsData, type OrderStatus, type Period } from "@/components/dashboard/demo-data";
 import { StatCard } from "@/components/ui/stat-card";
 import { TimedArea as Area, TimedPie as Pie } from "@/components/ui/timed-charts";
+import { dashboardHeadlineMetrics } from "@/lib/crm";
 import { useCRMSelector } from "@/lib/store";
-
-type Period = "Monthly" | "Quarterly" | "Annually";
-type OrderStatus = "Complete" | "Pending" | "Cancel";
-type Order = { id:string; initials:string; customer:string; email:string; service:string; value:string; closeDate:string; status:OrderStatus };
-
-const orders:Order[]=[
-  {id:"DE124321",initials:"JD",customer:"John Doe",email:"johndoe@gmail.com",service:"Software License",value:"$18,50.34",closeDate:"2024-06-15",status:"Complete"},
-  {id:"DE124322",initials:"JS",customer:"Jane Smith",email:"janesmith@gmail.com",service:"Cloud Hosting",value:"$12,99.00",closeDate:"2024-06-18",status:"Pending"},
-  {id:"DE124323",initials:"MB",customer:"Michael Brown",email:"michaelbrown@gmail.com",service:"Web Domain",value:"$9,50.00",closeDate:"2024-06-20",status:"Cancel"},
-  {id:"DE124324",initials:"AJ",customer:"Alice Johnson",email:"alicejohnson@gmail.com",service:"SSL Certificate",value:"$2,30.45",closeDate:"2024-06-25",status:"Pending"},
-  {id:"DE124325",initials:"RL",customer:"Robert Lee",email:"robertlee@gmail.com",service:"Premium Support",value:"$15,20.00",closeDate:"2024-06-30",status:"Complete"},
-];
-const statisticsData=[
- {month:"Jan",income:180,expenses:40},{month:"Feb",income:190,expenses:30},{month:"Mar",income:170,expenses:48},{month:"Apr",income:160,expenses:38},
- {month:"May",income:175,expenses:52},{month:"Jun",income:165,expenses:40},{month:"Jul",income:172,expenses:70},{month:"Aug",income:205,expenses:100},
- {month:"Sep",income:228,expenses:110},{month:"Oct",income:208,expenses:120},{month:"Nov",income:239,expenses:148},{month:"Dec",income:235,expenses:140},
-];
-const salesCategories=[
- {name:"Affiliate Program",value:48,products:"2,040 Products",color:"#465fff"},
- {name:"Direct Buy",value:33,products:"1,402 Products",color:"#7592ff"},
- {name:"Adsense",value:19,products:"510 Products",color:"#c7d7fe"},
-];
 
 export function Dashboard(){
  const deals=useCRMSelector(state=>state.deals);
  const events=useCRMSelector(state=>state.events);
+ const headlines=dashboardHeadlineMetrics(deals);
  const [period,setPeriod]=useState<Period>("Monthly");
  const [status,setStatus]=useState<"All"|OrderStatus>("All");
  const [filterOpen,setFilterOpen]=useState(false);
  const [selected,setSelected]=useState<string[]>([]);
- const active=deals.filter(d=>!["Won","Lost"].includes(d.stage));
- const won=deals.filter(d=>d.stage==="Won");
- const visibleOrders=useMemo(()=>status==="All"?orders:orders.filter(o=>o.status===status),[status]);
+ const visibleOrders=useMemo(()=>status==="All"?recentOrders:recentOrders.filter(o=>o.status===status),[status]);
  const allSelected=visibleOrders.length>0&&visibleOrders.every(o=>selected.includes(o.id));
  const toggleAll=()=>setSelected(allSelected?selected.filter(id=>!visibleOrders.some(o=>o.id===id)):[...new Set([...selected,...visibleOrders.map(o=>o.id)])]);
  return <div className="dashboard-page space-y-6">
   <section className="grid gap-6 xl:grid-cols-3">
-   <Metric value={`$${active.reduce((sum,d)=>sum+d.value,0).toLocaleString("en-US")}`} label="Active Deal" change="+20%" positive/>
-   <Metric value={`$${won.reduce((sum,d)=>sum+d.value,0).toLocaleString("en-US")}`} label="Revenue Total" change="+9.0%" positive/>
-   <Metric value="874" label="Closed Deals" change="-4.5%"/>
+   <Metric value={headlines.activeDealValue} label="Active Deal" change="+20%" positive/>
+   <Metric value={headlines.revenueTotal} label="Revenue Total" change="+9.0%" positive/>
+   <Metric value={headlines.closedDeals} label="Closed Deals" change="-4.5%"/>
   </section>
   <section className="grid gap-6 xl:grid-cols-3">
    <article className="panel p-6 xl:col-span-2"><div className="flex flex-wrap items-start justify-between gap-5"><div><h2 className="text-[20px] font-semibold">Statistics</h2><p className="muted mt-1 text-sm">Target you’ve set for each month</p></div><div className="soft flex rounded-lg p-0.5">{(["Monthly","Quarterly","Annually"] as Period[]).map(item=><button key={item} className={`rounded-md px-3 py-2 text-[14px] leading-5 ${period===item?"bg-[var(--panel)] font-semibold shadow-sm":"muted"}`} onClick={()=>setPeriod(item)}>{item}</button>)}</div></div><div className="mt-7 flex flex-wrap gap-x-16 gap-y-6"><Profit value={period==="Monthly"?"$212,142.12":period==="Quarterly"?"$624,876.42":"$2,416,928.20"} change="+23.2%" positive/><Profit value={period==="Monthly"?"$30,321.23":period==="Quarterly"?"$91,480.15":"$368,521.09"} change="-12.3%"/></div><div className="mt-5 h-[207px] w-full"><ResponsiveContainer width="100%" height="100%"><AreaChart data={statisticsData} margin={{top:8,right:4,left:-24,bottom:0}}><defs><linearGradient id="income-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#465fff" stopOpacity={.24}/><stop offset="100%" stopColor="#465fff" stopOpacity={0}/></linearGradient><linearGradient id="expense-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#9ab4ff" stopOpacity={.18}/><stop offset="100%" stopColor="#9ab4ff" stopOpacity={0}/></linearGradient></defs><CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3"/><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill:"var(--muted)",fontSize:12}} dy={8}/><YAxis domain={[0,250]} ticks={[0,50,100,150,200,250]} axisLine={false} tickLine={false} tick={{fill:"var(--muted)",fontSize:12}}/><Tooltip contentStyle={{border:"1px solid var(--border)",borderRadius:10,background:"var(--panel)"}}/><Area animationDuration={1800} animationEasing="ease-in-out" type="monotone" dataKey="income" stroke="#465fff" strokeWidth={2} fill="url(#income-fill)" dot={false}/><Area animationDuration={1800} animationEasing="ease-in-out" type="monotone" dataKey="expenses" stroke="#9ab4ff" strokeWidth={2} fill="url(#expense-fill)" dot={false}/></AreaChart></ResponsiveContainer></div></article>

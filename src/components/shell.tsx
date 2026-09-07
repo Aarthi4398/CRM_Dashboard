@@ -1,6 +1,7 @@
 "use client";
 
 import { menuSections } from "@/lib/menu";
+import { isBarePath } from "@/lib/routes/chrome";
 import { AppHeader } from "@/components/layout/app-header";
 import { SidebarItem } from "@/components/layout/sidebar-item";
 import { X } from "lucide-react";
@@ -17,7 +18,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const toggleGroup = (label: string) => setOpenGroups(groups => groups.includes(label) ? groups.filter(group => group !== label) : [...groups, label]);
   const go = () => setMobile(false);
 
-  if (["/signin","/signup","/reset-password","/two-step-verification","/error-404","/error-500","/error-503","/coming-soon","/maintenance","/success"].includes(path) || path.startsWith("/layout-")) return <>{children}</>;
+  if (isBarePath(path)) return <>{children}</>;
 
   return <div>
     <aside onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onFocusCapture={() => setHovered(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setHovered(false); }} className={`fixed inset-y-0 left-0 z-[60] flex flex-col overflow-x-hidden border-r border-[var(--border)] bg-[var(--panel)] shadow-sm transition-[width,transform] duration-300 ease-in-out motion-reduce:transition-none ${expanded ? "w-[290px]" : "w-[90px]"} ${mobile ? "translate-x-0" : "max-lg:-translate-x-full"}`} aria-label="Main navigation">

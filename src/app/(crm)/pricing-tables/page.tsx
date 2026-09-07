@@ -1,6 +1,7 @@
 "use client";
 
 import { BriefcaseBusiness, Check, Sparkles, UserRound } from "lucide-react";
+import "@/styles/pages/pricing-tables.css";
 import Link from "next/link";
 import { useState } from "react";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import {ArrowRight,ArrowRightLeft,ArrowUp,CalendarDays,ChevronDown,DollarSign,Download,MoreVertical,Package,SlidersHorizontal} from "lucide-react";
+import "@/styles/pages/sales.css";
 import Image from "next/image";
 import {useState} from "react";
 

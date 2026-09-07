@@ -12,7 +12,10 @@
     "test": "node --test tests/unit/*.test.mjs",
     "test:e2e": "node scripts/run-playwright.mjs test",
     "test:e2e:install": "node scripts/run-playwright.mjs install chromium",
-    "performance:budget": "node scripts/check-performance-budget.mjs"
+    "test:visual": "node scripts/run-playwright.mjs test tests/visual.spec.ts --project=chromium",
+    "performance:budget": "node scripts/check-performance-budget.mjs",
+    "test:vitals": "node scripts/check-web-vitals.mjs",
+    "lighthouse": "npx --yes @lhci/cli autorun --config=lighthouserc.cjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

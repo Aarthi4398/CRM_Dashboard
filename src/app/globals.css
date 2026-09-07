@@ -1,34 +1,5 @@
 @import "tailwindcss";
 
-/* Shared styles load first; page files contain route-specific presentation. */
+/* Route chrome only. Page-specific CSS is imported from the matching page module. */
 @import "../styles/shared.css";
 @import "../styles/layout.css";
-@import "../styles/pages/dashboard.css";
-@import "../styles/pages/ecommerce.css";
-@import "../styles/pages/analytics.css";
-@import "../styles/pages/marketing.css";
-@import "../styles/pages/finance.css";
-@import "../styles/pages/stocks.css";
-@import "../styles/pages/sales.css";
-@import "../styles/pages/invoices.css";
-@import "../styles/pages/ai-settings.css";
-@import "../styles/pages/generators.css";
-@import "../styles/pages/layout-demos.css";
-@import "../styles/pages/catalog.css";
-@import "../styles/pages/add-product.css";
-@import "../styles/pages/ai.css";
-@import "../styles/pages/api-keys.css";
-@import "../styles/pages/billing.css";
-@import "../styles/pages/calendar.css";
-@import "../styles/pages/chat.css";
-@import "../styles/pages/create-invoice.css";
-@import "../styles/pages/file-manager.css";
-@import "../styles/pages/form-elements.css";
-@import "../styles/pages/inbox.css";
-@import "../styles/pages/pricing-tables.css";
-@import "../styles/pages/products-list.css";
-@import "../styles/pages/profile.css";
-@import "../styles/pages/single-invoice.css";
-@import "../styles/pages/single-transaction.css";
-@import "../styles/pages/support-ticket-reply.css";
-@import "../styles/pages/task-kanban.css";

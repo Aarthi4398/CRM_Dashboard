@@ -1,5 +1,6 @@
 "use client";
 
+import "@/styles/pages/create-invoice.css";
 import { Eye, Info, Minus, Plus, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";

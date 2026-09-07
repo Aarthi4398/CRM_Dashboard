@@ -1,4 +1,5 @@
 "use client";
+import "@/styles/pages/api-keys.css";
 import {Copy,Plus,RefreshCw} from "lucide-react";
 import {useState} from "react";
 type Key={id:number;name:string;prefix:string;last:string;status:"Active"|"Disabled";created:string;used:string};

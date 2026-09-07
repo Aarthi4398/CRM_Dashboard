@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import "@/styles/pages/profile.css";
 import { CheckCircle2, Github, Linkedin, LogOut, Pencil, Trash2, Twitter } from "lucide-react";
 import Image from "next/image";
 import { Modal } from "@/components/modal";
+import { useFeedback } from "@/components/ui/app-feedback";
+import { updateProfile } from "@/lib/crm";
 import { useCRMActions, useCRMSelector } from "@/lib/store";
 import { TextInputField as Input } from "@/components/ui/text-input-field";
 
@@ -25,7 +28,7 @@ export default function ProfilePage() {
 
   const save = (event: React.FormEvent) => {
     event.preventDefault();
-    setState((current) => ({ ...current, profile: form }));
+    setState((current) => updateProfile(current, form));
     setEditor(null);
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2200);
@@ -56,7 +59,7 @@ export default function ProfilePage() {
       <section className="panel p-5 sm:p-6">
         <h2 className="text-lg font-semibold">Security</h2>
         <div className="mt-6 divide-y divide-[var(--border)]">
-          <div className="flex flex-wrap items-center justify-between gap-4 py-5 first:pt-0"><div><h3 className="font-medium">Change Password</h3><p className="muted mt-1 text-sm">Update your password regularly to protect your account.</p></div><button className="btn" onClick={() => alert("Password settings are disabled in this portfolio demo.")}>Change Password</button></div>
+          <div className="flex flex-wrap items-center justify-between gap-4 py-5 first:pt-0"><div><h3 className="font-medium">Change Password</h3><p className="muted mt-1 text-sm">Update your password regularly to protect your account.</p></div><PasswordNoticeButton/></div>
           <div className="flex flex-wrap items-center justify-between gap-4 py-5 last:pb-0"><div><h3 className="font-medium">Two-Factor Authentication (2FA)</h3><p className="muted mt-1 text-sm">Keep your account secure by enabling 2FA.</p></div><button type="button" role="switch" aria-checked={twoFactor} aria-label="Two-factor authentication" onClick={() => setTwoFactor((value) => !value)} className={`relative h-6 w-11 rounded-full transition-colors ${twoFactor ? "bg-[#465fff]" : "bg-slate-300"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${twoFactor ? "translate-x-6" : "translate-x-1"}`}/></button></div>
         </div>
       </section>
@@ -76,6 +79,13 @@ export default function ProfilePage() {
 }
 
 function SocialButton({ label, children }: { label: string; children: React.ReactNode }) { return <button className="btn !rounded-full !p-2.5" aria-label={label}>{children}</button> }
+function PasswordNoticeButton() {
+  const { toast } = useFeedback();
+  return <button className="btn" onClick={() => toast("Password settings are disabled in this portfolio demo.")}>Change Password</button>;
+}
 function InfoCard({ title, onEdit, children }: { title: string; onEdit: () => void; children: React.ReactNode }) { return <section className="panel p-5 sm:p-6"><div className="flex items-center justify-between gap-4"><h2 className="text-lg font-semibold">{title}</h2><button className="btn !px-4 !py-2" onClick={onEdit}><Pencil size={16}/>Edit</button></div><div className="mt-7 grid gap-x-8 gap-y-6 sm:grid-cols-2">{children}</div></section> }
 function Info({ label, value, wide = false }: { label: string; value: string; wide?: boolean }) { return <div className={wide ? "sm:col-span-2" : ""}><p className="muted text-xs">{label}</p><p className="mt-2 break-words text-sm font-medium">{value}</p></div> }
-function DangerAction({ icon, title, description, button }: { icon: React.ReactNode; title: string; description: string; button: string }) { return <div className="flex flex-wrap items-center justify-between gap-4 py-5 first:pt-0 last:pb-0"><div className="flex gap-3"><span className="mt-0.5 text-red-500">{icon}</span><div><h3 className="font-medium">{title}</h3><p className="muted mt-1 text-sm">{description}</p></div></div><button className="btn border-red-200 text-red-600 hover:bg-red-50" onClick={() => alert(`${button} is disabled in this portfolio demo.`)}>{button}</button></div> }
+function DangerAction({ icon, title, description, button }: { icon: React.ReactNode; title: string; description: string; button: string }) {
+  const { toast } = useFeedback();
+  return <div className="flex flex-wrap items-center justify-between gap-4 py-5 first:pt-0 last:pb-0"><div className="flex gap-3"><span className="mt-0.5 text-red-500">{icon}</span><div><h3 className="font-medium">{title}</h3><p className="muted mt-1 text-sm">{description}</p></div></div><button className="btn border-red-200 text-red-600 hover:bg-red-50" onClick={() => toast(`${button} is disabled in this portfolio demo.`)}>{button}</button></div>;
+}

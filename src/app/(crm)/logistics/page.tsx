@@ -1,5 +1,3 @@
-"use client";
-
 import dynamic from "next/dynamic";
 import { HeavyVisualLoading } from "@/components/ui/heavy-visual-loading";
 

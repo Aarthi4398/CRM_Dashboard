@@ -1,5 +1,6 @@
 "use client";
 
+import "@/styles/pages/ai-settings.css";
 import {
   Bot, ChevronDown, CircleUserRound, CreditCard, Database, FileImage,
   KeyRound, Link2, LogOut, MemoryStick, SlidersHorizontal, Sparkles, Trash2,

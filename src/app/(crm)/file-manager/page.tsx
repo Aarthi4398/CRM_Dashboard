@@ -1,5 +1,6 @@
 "use client";
 
+import "@/styles/pages/file-manager.css";
 import { Modal } from "@/components/modal";
 import { AppWindow, ArrowRight, ChevronRight, Download, Eye, FileText, Folder, MoreVertical, Music2, Play, Plus, Search, Trash2 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";

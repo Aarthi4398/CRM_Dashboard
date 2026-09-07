@@ -1,17 +1,14 @@
 "use client";
 
+import "@/styles/pages/calendar.css";
 import { Modal } from "@/components/modal";
+import { deleteCalendarEvent, mergeCalendarEvents, upsertCalendarEvent } from "@/lib/crm";
 import { useCRMActions, useCRMSelector } from "@/lib/store";
 import type { CalendarEvent } from "@/lib/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-const featured: CalendarEvent[] = [
-  { id: "calendar-event-conf", title: "Event Conf.", date: "2026-08-24", time: "10:00", category: "Meeting", attendees: 12, relatedTo: "CRM" },
-  { id: "calendar-meeting", title: "Meeting", date: "2026-08-25", time: "11:30", category: "Call", attendees: 4, relatedTo: "Sales" },
-  { id: "calendar-workshop", title: "Workshop", date: "2026-08-26", time: "14:00", category: "Deadline", attendees: 8, relatedTo: "Marketing" },
-];
 type View = "month" | "week" | "day";
 type FormState = { id?: string; title: string; date: string; time: string; category: CalendarEvent["category"] };
 const emptyForm: FormState = { title: "", date: "2026-08-24", time: "10:00", category: "Meeting" };
@@ -24,7 +21,7 @@ export default function CalendarPage() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [open, setOpen] = useState(false);
   const year = cursor.getFullYear(), month = cursor.getMonth();
-  const allEvents = useMemo(() => [...featured, ...events.filter(event => !featured.some(item => item.id === event.id))], [events]);
+  const allEvents = useMemo(() => mergeCalendarEvents(events), [events]);
   const monthCells = useMemo(() => {
     const first = new Date(year, month, 1), start = new Date(year, month, 1 - first.getDay());
     return Array.from({ length: 42 }, (_, index) => { const date = new Date(start); date.setDate(start.getDate() + index); return date; });
@@ -33,11 +30,11 @@ export default function CalendarPage() {
   const openEvent = (event: CalendarEvent) => { setForm({ id: event.id, title: event.title, date: event.date, time: event.time, category: event.category }); setOpen(true); };
   const save = (event: React.FormEvent) => {
     event.preventDefault(); if (!form.title.trim()) return;
-    const next: CalendarEvent = { id: form.id ?? crypto.randomUUID(), title: form.title.trim(), date: form.date, time: form.time, category: form.category, attendees: 2, relatedTo: "CRM" };
-    setState(current => ({ ...current, events: form.id ? current.events.map(item => item.id === form.id ? next : item).concat(featured.some(item => item.id === form.id) && !current.events.some(item => item.id === form.id) ? [next] : []) : [...current.events, next] }));
+    const next: CalendarEvent = { id: form.id ?? crypto.randomUUID(), title: form.title.trim(), date: form.date, time: form.time, category: form.category, attendees: 2, relatedTo: "CRM", relatedToId: undefined };
+    setState(current => upsertCalendarEvent(current, next, !form.id));
     setOpen(false);
   };
-  const remove = () => { if (!form.id) return; setState(current => ({ ...current, events: current.events.filter(item => item.id !== form.id) })); setOpen(false); };
+  const remove = () => { if (!form.id) return; setState(current => deleteCalendarEvent(current, form.id!)); setOpen(false); };
   const move = (amount: number) => setCursor(view === "month" ? new Date(year, month + amount, 1) : new Date(year, month, cursor.getDate() + amount * (view === "week" ? 7 : 1)));
 
   return <div className="space-y-7">

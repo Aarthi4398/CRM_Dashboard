@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- preview uses a temporary browser data URL */
 
+import "@/styles/pages/add-product.css";
 import { ImagePlus, UploadCloud, X } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";

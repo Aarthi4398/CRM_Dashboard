@@ -1,6 +1,7 @@
 "use client";
 
 import { Printer } from "lucide-react";
+import "@/styles/pages/single-invoice.css";
 import { useState } from "react";
 
 const items = [

@@ -1,6 +1,7 @@
 "use client";
 
 import { CreditCard, Eye, Mail, RefreshCcw, Send, ShoppingCart } from "lucide-react";
+import "@/styles/pages/single-transaction.css";
 import Link from "next/link";
 import { useState } from "react";
 

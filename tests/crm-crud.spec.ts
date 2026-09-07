@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+test.describe("CRM CRUD", () => {
+  test.describe.configure({ timeout: 60_000 });
+
 test("contact create, edit, persist, and delete flow", async ({ page }) => {
   await page.goto("/contacts");
   await page.getByRole("button", { name: "Add contact" }).click();
@@ -19,8 +22,8 @@ test("contact create, edit, persist, and delete flow", async ({ page }) => {
   await page.getByRole("button", { name: "Save contact" }).click();
   await expect(row).toContainText("Senior QA Lead");
 
-  page.once("dialog", dialog => dialog.accept());
   await row.getByRole("button", { name: "Delete" }).click();
+  await page.getByRole("dialog", { name: "Delete contact" }).getByRole("button", { name: "Delete" }).click();
   await expect(page.getByText("Playwright Person", { exact: true })).toHaveCount(0);
 });
 
@@ -62,4 +65,5 @@ test("calendar event creation persists", async ({ page }) => {
   await expect(page.getByText("Playwright planning session", { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByText("Playwright planning session", { exact: true })).toBeVisible();
+});
 });

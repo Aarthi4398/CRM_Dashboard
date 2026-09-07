@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronRight, Clipboard, Clock3, CloudUpload, CreditCard, Eye, EyeOff, Mail, X } from "lucide-react";
+import "@/styles/pages/form-elements.css";
 import { useRef, useState } from "react";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 

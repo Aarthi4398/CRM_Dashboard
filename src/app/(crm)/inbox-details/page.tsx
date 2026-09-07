@@ -1,8 +1,10 @@
 "use client";
 
 import { Archive, ArrowLeft, ChevronLeft, ChevronRight, Download, FileText, Info, Inbox, LockKeyhole, Mail, Pencil, Reply, ReplyAll, Send, Star, Trash2 } from "lucide-react";
+import "@/styles/pages/inbox.css";
 import Link from "next/link";
 import { useState } from "react";
+import { useFeedback } from "@/components/ui/app-feedback";
 
 const mailboxes = [{ name: "Inbox", icon: Inbox, count: 3 },{ name: "Sent", icon: Send },{ name: "Drafts", icon: Mail },{ name: "Spam", icon: LockKeyhole, count: 2 },{ name: "Trash", icon: Trash2 },{ name: "Archive", icon: Archive }];
 export default function InboxDetailsPage() {
@@ -23,4 +25,4 @@ export default function InboxDetailsPage() {
 function Section({title,children}:{title:string;children:React.ReactNode}){return <section className="mb-6"><h2 className="muted mb-2 px-1 text-[11px] font-medium">{title}</h2><div className="space-y-1">{children}</div></section>}
 function SideItem({icon,label}:{icon:React.ReactNode;label:string}){return <button className="muted flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm hover:bg-[var(--soft)]">{icon}{label}</button>}
 function Label({color,text}:{color:string;text:string}){return <button className="muted flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-[var(--soft)]"><i className={`h-2.5 w-2.5 rounded-full ${color}`}/>{text}</button>}
-function Attachment({name,type}:{name:string;type:string}){return <article className="flex items-center gap-3 rounded-xl border border-[var(--border)] p-4"><span className="grid h-10 w-10 place-items-center rounded-lg bg-indigo-50 text-[#465fff]"><FileText size={19}/></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{name}</p><p className="muted mt-1 text-xs">{type}</p></div><button className="muted rounded-lg p-2 hover:bg-[var(--soft)]" onClick={()=>alert(`Downloading ${name}`)} aria-label={`Download ${name}`}><Download size={18}/></button></article>}
+function Attachment({name,type}:{name:string;type:string}){const {toast}=useFeedback();return <article className="flex items-center gap-3 rounded-xl border border-[var(--border)] p-4"><span className="grid h-10 w-10 place-items-center rounded-lg bg-indigo-50 text-[#465fff]"><FileText size={19}/></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{name}</p><p className="muted mt-1 text-xs">{type}</p></div><button className="muted rounded-lg p-2 hover:bg-[var(--soft)]" onClick={()=>toast(`Downloading ${name}`)} aria-label={`Download ${name}`}><Download size={18}/></button></article>}

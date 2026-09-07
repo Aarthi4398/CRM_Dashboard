@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, ChevronDown, ChevronRight, LockKeyhole, Mail, Send, UserRound } from "lucide-react";
+import "@/styles/pages/form-elements.css";
 import { useState } from "react";
 import { PremiumDatePicker as SharedPremiumDatePicker } from "@/components/ui/premium-date-picker";
 

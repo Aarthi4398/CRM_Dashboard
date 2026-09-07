@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/ui/app-feedback";
 import { ArrowLeft, Eye, EyeOff, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import { useEffect, useState } from "react";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { toast } = useFeedback();
   const [show, setShow] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [dark, setDark] = useState(false);
@@ -41,10 +43,10 @@ export default function SignUpPage() {
           <p className="muted mt-2 text-sm">Enter your email and password to sign up!</p>
 
           <div className="mt-7 grid grid-cols-1 gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-5">
-            <button type="button" className="soft flex h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium hover:brightness-95" onClick={() => alert("Google sign-up is a portfolio demo.")}>
+            <button type="button" className="soft flex h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium hover:brightness-95" onClick={() => toast("Google sign-up is a portfolio demo.")}>
               <span className="text-lg font-bold text-red-500">G</span> Sign up with Google
             </button>
-            <button type="button" className="soft flex h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium hover:brightness-95" onClick={() => alert("X sign-up is a portfolio demo.")}>
+            <button type="button" className="soft flex h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium hover:brightness-95" onClick={() => toast("X sign-up is a portfolio demo.")}>
               <span className="text-xl">𝕏</span> Sign up with X
             </button>
           </div>

@@ -17,12 +17,33 @@ export function isCRMState(value:unknown):value is CRMState{
  return contacts&&companies&&deals&&tasks&&events&&profile;
 }
 
+function withRelated<T>(items:T[], update:(item:T)=>T):T[]{
+ let changed=false;
+ const next=items.map((item)=>{
+  const updated=update(item);
+  if(updated===item)return item;
+  changed=true;
+  return updated;
+ });
+ return changed?next:items;
+}
+
 export function normalizeCRMRelationships(state:CRMState):CRMState{
  const companyIds=new Map(state.companies.map(company=>[company.name,company.id]));
  const contactIds=new Map(state.contacts.map(contact=>[contact.name,contact.id]));
- return {...state,
-  deals:state.deals.map(deal=>({...deal,companyId:deal.companyId??companyIds.get(deal.company),contactId:deal.contactId??contactIds.get(deal.contact)})),
-  tasks:state.tasks.map(task=>({...task,relatedToId:task.relatedToId??companyIds.get(task.relatedTo)})),
-  events:state.events.map(event=>({...event,relatedToId:event.relatedToId??companyIds.get(event.relatedTo)})),
- };
+ const deals=withRelated(state.deals,(deal)=>{
+  const companyId=deal.companyId??companyIds.get(deal.company);
+  const contactId=deal.contactId??contactIds.get(deal.contact);
+  return companyId===deal.companyId&&contactId===deal.contactId?deal:{...deal,companyId,contactId};
+ });
+ const tasks=withRelated(state.tasks,(task)=>{
+  const relatedToId=task.relatedToId??companyIds.get(task.relatedTo)??contactIds.get(task.relatedTo);
+  return relatedToId===task.relatedToId?task:{...task,relatedToId};
+ });
+ const events=withRelated(state.events,(event)=>{
+  const relatedToId=event.relatedToId??companyIds.get(event.relatedTo)??contactIds.get(event.relatedTo);
+  return relatedToId===event.relatedToId?event:{...event,relatedToId};
+ });
+ if(deals===state.deals&&tasks===state.tasks&&events===state.events)return state;
+ return {...state,deals,tasks,events};
 }

@@ -1,6 +1,8 @@
 "use client";
+// Catalog demo board — not CRMState.tasks (/tasks is the connected CRM view).
 
 import { Modal } from "@/components/modal";
+import "@/styles/pages/task-kanban.css";
 import { CalendarDays, ChevronRight, Link2, MessageCircle, MoreHorizontal, Plus, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 

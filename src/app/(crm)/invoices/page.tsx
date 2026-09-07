@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowDownUp, Download, MoreHorizontal, Plus, Search, SlidersHorizontal } from "lucide-react";
+import "@/styles/pages/invoices.css";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 

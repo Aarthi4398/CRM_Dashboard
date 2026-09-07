@@ -1,6 +1,7 @@
 "use client";
 
 import { Archive, ChevronDown, ChevronLeft, ChevronRight, EllipsisVertical, Inbox, LockKeyhole, Mail, Pencil, RefreshCw, Search, Send, Star, Trash2 } from "lucide-react";
+import "@/styles/pages/inbox.css";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import "@/styles/pages/finance.css";
 import { ArrowDown, ArrowUp, Banknote, ChartSpline, Check, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign, Copy, CreditCard, MoreHorizontal, Plus, Search, Send, Shield, SlidersHorizontal, Wallet } from "lucide-react";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

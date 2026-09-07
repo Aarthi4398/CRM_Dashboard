@@ -1,11 +1,12 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createLocalStorageRepository } from "./data/repository";
 import { seedState } from "./seed";
 import type { CRMState } from "./types";
-import { isCRMState, normalizeCRMRelationships } from "./validate-state";
+import { normalizeCRMRelationships } from "./validate-state";
 
-const STORAGE_KEY = "aarthi-crm:v1";
+const repository = createLocalStorageRepository();
 type Store = { state:CRMState; setState:React.Dispatch<React.SetStateAction<CRMState>>; reset:()=>void; hydrated:boolean };
 type Actions = Pick<Store, "setState" | "reset">;
 const StoreContext = createContext<Store | null>(null);
@@ -20,7 +21,10 @@ type SelectorStore = {
 const SelectorStoreContext = createContext<SelectorStore | null>(null);
 
 export function StoreProvider({children}:{children:React.ReactNode}) {
-  const [state,setState]=useState<CRMState>(seedState);
+  const [state,setRawState]=useState<CRMState>(seedState);
+  const setState = useCallback<React.Dispatch<React.SetStateAction<CRMState>>>((update) => {
+    setRawState((current) => normalizeCRMRelationships(typeof update === "function" ? update(current) : update));
+  }, []);
   const [hydrated,setHydrated]=useState(false);
   const currentState = useRef(seedState);
   const selectorListeners = useRef(new Set<() => void>());
@@ -34,11 +38,11 @@ export function StoreProvider({children}:{children:React.ReactNode}) {
   useLayoutEffect(() => selectorStore.update(state), [selectorStore, state]);
   // Hydration is the one deliberate effect-to-state synchronization point.
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(()=>{ try { const raw=localStorage.getItem(STORAGE_KEY); if(raw){const parsed:unknown=JSON.parse(raw); if(isCRMState(parsed)) setState(normalizeCRMRelationships(parsed));else{console.warn("Ignoring invalid persisted CRM data.");localStorage.removeItem(STORAGE_KEY);}} } catch(error) { console.warn("Unable to restore persisted CRM data.",error);localStorage.removeItem(STORAGE_KEY); } setHydrated(true); },[]);
-  useEffect(()=>{ if(hydrated) localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); },[state,hydrated]);
-  const reset=useCallback(()=>{setState(seedState);localStorage.removeItem(STORAGE_KEY);},[]);
-  const value=useMemo(()=>({state,setState,reset,hydrated}),[state,reset,hydrated]);
-  const actions=useMemo(()=>({setState,reset}),[reset]);
+  useEffect(()=>{ const restored=repository.load(); if(restored) setRawState(restored); setHydrated(true); },[]);
+  useEffect(()=>{ if(hydrated) repository.save(state); },[state,hydrated]);
+  const reset=useCallback(()=>{setRawState(seedState);repository.clear();},[]);
+  const value=useMemo(()=>({state,setState,reset,hydrated}),[state,setState,reset,hydrated]);
+  const actions=useMemo(()=>({setState,reset}),[setState,reset]);
   return <SelectorStoreContext.Provider value={selectorStore}><ActionsContext.Provider value={actions}><StoreContext.Provider value={value}>{children}</StoreContext.Provider></ActionsContext.Provider></SelectorStoreContext.Provider>;
 }
 export function useCRM(){const value=useContext(StoreContext);if(!value)throw new Error("useCRM must be used within StoreProvider");return value;}
