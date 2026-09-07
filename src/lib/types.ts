@@ -2,7 +2,7 @@ export type ContactStatus = "Active" | "Lead" | "Inactive";
 export type DealStage = "Lead" | "Qualified" | "Proposal" | "Negotiation" | "Won" | "Lost";
 export type TaskStatus = "To do" | "In progress" | "Done";
 
-export interface Contact { id:string; name:string; role:string; company:string; email:string; phone:string; status:ContactStatus; initials:string; tags:string[]; createdAt:string }
+export interface Contact { id:string; name:string; role:string; company:string; companyId?:string; email:string; phone:string; status:ContactStatus; initials:string; tags:string[]; createdAt:string }
 export interface Company { id:string; name:string; industry:string; website:string; location:string; value:number; contactCount:number; status:"Customer"|"Prospect" }
 export interface Deal { id:string; title:string; company:string; companyId?:string; contact:string; contactId?:string; value:number; stage:DealStage; probability:number; owner:string; closeDate:string }
 export interface CRMTask { id:string; title:string; description:string; priority:"Low"|"Medium"|"High"; status:TaskStatus; dueDate:string; relatedTo:string; relatedToId?:string }

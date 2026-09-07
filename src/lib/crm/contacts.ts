@@ -1,4 +1,5 @@
 import type { Contact, ContactStatus, CRMState } from "../types";
+import { resolveContactCompany } from "./relationships";
 
 export type ContactDraft = {
   name: string;
@@ -15,17 +16,18 @@ export function contactInitials(name: string): string {
 
 export function upsertContact(state: CRMState, draft: ContactDraft, existingId?: string): CRMState {
   const initials = contactInitials(draft.name);
+  const companyRef = resolveContactCompany(state, draft.company);
+  const contactFields = { ...draft, ...companyRef, initials };
   if (existingId) {
     return {
       ...state,
-      contacts: state.contacts.map((contact) => contact.id === existingId ? { ...contact, ...draft, initials } : contact),
+      contacts: state.contacts.map((contact) => contact.id === existingId ? { ...contact, ...contactFields } : contact),
       deals: state.deals.map((deal) => deal.contactId === existingId ? { ...deal, contact: draft.name } : deal),
     };
   }
   const contact: Contact = {
     id: crypto.randomUUID(),
-    ...draft,
-    initials,
+    ...contactFields,
     tags: ["New"],
     createdAt: new Date().toISOString().slice(0, 10),
   };

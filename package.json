@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/unit/*.test.mjs",
+    "test": "node scripts/run-unit-tests.mjs",
     "test:e2e": "node scripts/run-playwright.mjs test",
     "test:e2e:install": "node scripts/run-playwright.mjs install chromium",
     "test:visual": "node scripts/run-playwright.mjs test tests/visual.spec.ts --project=chromium",

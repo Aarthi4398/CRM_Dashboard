@@ -1,4 +1,11 @@
 import type { Company, CRMState } from "../types";
+import {
+  contactLinkedToCompany,
+  dealLinkedToCompany,
+  eventLinkedToCompany,
+  propagateCompanyRename,
+  taskLinkedToCompany,
+} from "./relationships";
 
 export type CompanyDraft = {
   name: string;
@@ -26,38 +33,8 @@ function normalizeDraft(draft: CompanyDraft): CompanyDraft {
   };
 }
 
-function contactCountForCompany(state: CRMState, companyName: string): number {
-  return state.contacts.filter((contact) => contact.company === companyName).length;
-}
-
-function propagateCompanyRename(
-  state: CRMState,
-  companyId: string,
-  previousName: string,
-  nextName: string,
-): CRMState {
-  if (previousName === nextName) return state;
-  return {
-    ...state,
-    contacts: state.contacts.map((contact) =>
-      contact.company === previousName ? { ...contact, company: nextName } : contact,
-    ),
-    deals: state.deals.map((deal) =>
-      deal.companyId === companyId || deal.company === previousName
-        ? { ...deal, company: nextName, companyId }
-        : deal,
-    ),
-    tasks: state.tasks.map((task) =>
-      task.relatedToId === companyId || task.relatedTo === previousName
-        ? { ...task, relatedTo: nextName, relatedToId: companyId }
-        : task,
-    ),
-    events: state.events.map((event) =>
-      event.relatedToId === companyId || event.relatedTo === previousName
-        ? { ...event, relatedTo: nextName, relatedToId: companyId }
-        : event,
-    ),
-  };
+function contactCountForCompany(state: CRMState, company: Company): number {
+  return state.contacts.filter((contact) => contactLinkedToCompany(contact, company, state.companies)).length;
 }
 
 export function upsertCompany(state: CRMState, draft: CompanyDraft, existingId?: string): CRMState {
@@ -68,6 +45,7 @@ export function upsertCompany(state: CRMState, draft: CompanyDraft, existingId?:
     if (!existing) return state;
 
     let next = propagateCompanyRename(state, existingId, existing.name, normalized.name);
+    const updatedCompany = { ...existing, ...normalized };
     next = {
       ...next,
       companies: next.companies.map((company) =>
@@ -75,7 +53,7 @@ export function upsertCompany(state: CRMState, draft: CompanyDraft, existingId?:
           ? {
               ...company,
               ...normalized,
-              contactCount: contactCountForCompany(next, normalized.name),
+              contactCount: contactCountForCompany(next, updatedCompany),
             }
           : company,
       ),
@@ -86,21 +64,27 @@ export function upsertCompany(state: CRMState, draft: CompanyDraft, existingId?:
   const company: Company = {
     id: crypto.randomUUID(),
     ...normalized,
-    contactCount: contactCountForCompany(state, normalized.name),
+    contactCount: 0,
   };
-  return { ...state, companies: [company, ...state.companies] };
+  const next = { ...state, companies: [company, ...state.companies] };
+  return {
+    ...next,
+    companies: next.companies.map((item) =>
+      item.id === company.id
+        ? { ...item, contactCount: contactCountForCompany(next, item) }
+        : item,
+    ),
+  };
 }
 
 export function companyDeleteBlockMessage(state: CRMState, id: string): string | null {
   const company = state.companies.find((item) => item.id === id);
   if (!company) return "Company not found";
 
-  const linkedContacts = state.contacts.filter((contact) => contact.company === company.name);
-  const linkedDeals = state.deals.filter(
-    (deal) => deal.companyId === id || deal.company === company.name,
-  );
-  const linkedTasks = state.tasks.filter((task) => task.relatedToId === id);
-  const linkedEvents = state.events.filter((event) => event.relatedToId === id);
+  const linkedContacts = state.contacts.filter((contact) => contactLinkedToCompany(contact, company, state.companies));
+  const linkedDeals = state.deals.filter((deal) => dealLinkedToCompany(deal, company, state.companies));
+  const linkedTasks = state.tasks.filter((task) => taskLinkedToCompany(task, company, state.companies));
+  const linkedEvents = state.events.filter((event) => eventLinkedToCompany(event, company, state.companies));
 
   if (!linkedContacts.length && !linkedDeals.length && !linkedTasks.length && !linkedEvents.length) {
     return null;

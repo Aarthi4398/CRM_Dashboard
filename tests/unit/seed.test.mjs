@@ -20,6 +20,7 @@ test("persisted CRM state is validated at record level", () => {
 test("seed relationships use stable IDs when matching records exist", () => {
   const companyIds = new Set(seedState.companies.map(company => company.id));
   const contactIds = new Set(seedState.contacts.map(contact => contact.id));
+  assert.ok(seedState.contacts.every(contact => !contact.companyId || companyIds.has(contact.companyId)));
   assert.ok(seedState.deals.every(deal => !deal.companyId || companyIds.has(deal.companyId)));
   assert.ok(seedState.deals.every(deal => !deal.contactId || contactIds.has(deal.contactId)));
   assert.ok(seedState.tasks.every(task => !task.relatedToId || companyIds.has(task.relatedToId)));

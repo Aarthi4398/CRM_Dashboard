@@ -2,10 +2,10 @@ import type { CRMState } from "./types";
 
 export const seedState: CRMState = {
   contacts: [
-    {id:"c1",name:"John Doe",role:"Product Director",company:"Nova Labs",email:"john@novalabs.demo",phone:"+1 202 555 0142",status:"Active",initials:"JD",tags:["Enterprise"],createdAt:"2026-08-10"},
-    {id:"c2",name:"Jane Smith",role:"Operations Lead",company:"Cloudly",email:"jane@cloudly.demo",phone:"+1 202 555 0128",status:"Lead",initials:"JS",tags:["SaaS"],createdAt:"2026-08-12"},
-    {id:"c3",name:"Michael Brown",role:"Founder",company:"Vertex Co",email:"michael@vertex.demo",phone:"+1 202 555 0177",status:"Active",initials:"MB",tags:["Priority"],createdAt:"2026-08-14"},
-    {id:"c4",name:"Alice Johnson",role:"Marketing VP",company:"Pixel Works",email:"alice@pixelworks.demo",phone:"+1 202 555 0193",status:"Inactive",initials:"AJ",tags:["Agency"],createdAt:"2026-08-16"},
+    {id:"c1",name:"John Doe",role:"Product Director",company:"Nova Labs",companyId:"co1",email:"john@novalabs.demo",phone:"+1 202 555 0142",status:"Active",initials:"JD",tags:["Enterprise"],createdAt:"2026-08-10"},
+    {id:"c2",name:"Jane Smith",role:"Operations Lead",company:"Cloudly",companyId:"co2",email:"jane@cloudly.demo",phone:"+1 202 555 0128",status:"Lead",initials:"JS",tags:["SaaS"],createdAt:"2026-08-12"},
+    {id:"c3",name:"Michael Brown",role:"Founder",company:"Vertex Co",companyId:"co3",email:"michael@vertex.demo",phone:"+1 202 555 0177",status:"Active",initials:"MB",tags:["Priority"],createdAt:"2026-08-14"},
+    {id:"c4",name:"Alice Johnson",role:"Marketing VP",company:"Pixel Works",companyId:"co4",email:"alice@pixelworks.demo",phone:"+1 202 555 0193",status:"Inactive",initials:"AJ",tags:["Agency"],createdAt:"2026-08-16"},
     {id:"c5",name:"Robert Lee",role:"CTO",company:"Metric AI",email:"robert@metric.demo",phone:"+1 202 555 0110",status:"Lead",initials:"RL",tags:["AI"],createdAt:"2026-08-18"},
   ],
   companies: [

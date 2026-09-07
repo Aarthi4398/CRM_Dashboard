@@ -7,6 +7,20 @@ import type {
   Deal,
   Profile,
 } from "./types";
+import { normalizeCRMRelationships } from "./crm/relationships";
+
+export {
+  contactLinkedToCompany,
+  dealLinkedToCompany,
+  eventLinkedToCompany,
+  findUniqueCompanyIdByName,
+  findUniqueContactIdByName,
+  normalizeCRMRelationships,
+  normalizeEntityName,
+  propagateCompanyRename,
+  resolveContactCompany,
+  taskLinkedToCompany,
+} from "./crm/relationships";
 
 const object = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === "object" && !Array.isArray(value);
@@ -20,8 +34,10 @@ const oneOf =
 
 export function isContact(value: unknown): value is Contact {
   if (!object(value)) return false;
+  const hasCompanyId = value.companyId === undefined || text(value.companyId);
   return (
-    [value.id, value.name, value.role, value.company, value.email, value.phone, value.initials, value.createdAt].every(text)
+    hasCompanyId
+    && [value.id, value.name, value.role, value.company, value.email, value.phone, value.initials, value.createdAt].every(text)
     && oneOf(["Active", "Lead", "Inactive"] as const)(value.status)
     && strings(value.tags)
   );
@@ -128,39 +144,6 @@ export function sanitizeCRMState(
     }),
     dropped,
   };
-}
-
-function withRelated<T>(items: T[], update: (item: T) => T): T[] {
-  let changed = false;
-  const next = items.map((item) => {
-    const updated = update(item);
-    if (updated === item) return item;
-    changed = true;
-    return updated;
-  });
-  return changed ? next : items;
-}
-
-export function normalizeCRMRelationships(state: CRMState): CRMState {
-  const companyIds = new Map(state.companies.map((company) => [company.name, company.id]));
-  const contactIds = new Map(state.contacts.map((contact) => [contact.name, contact.id]));
-  const deals = withRelated(state.deals, (deal) => {
-    const companyId = deal.companyId ?? companyIds.get(deal.company);
-    const contactId = deal.contactId ?? contactIds.get(deal.contact);
-    return companyId === deal.companyId && contactId === deal.contactId
-      ? deal
-      : { ...deal, companyId, contactId };
-  });
-  const tasks = withRelated(state.tasks, (task) => {
-    const relatedToId = task.relatedToId ?? companyIds.get(task.relatedTo) ?? contactIds.get(task.relatedTo);
-    return relatedToId === task.relatedToId ? task : { ...task, relatedToId };
-  });
-  const events = withRelated(state.events, (event) => {
-    const relatedToId = event.relatedToId ?? companyIds.get(event.relatedTo) ?? contactIds.get(event.relatedTo);
-    return relatedToId === event.relatedToId ? event : { ...event, relatedToId };
-  });
-  if (deals === state.deals && tasks === state.tasks && events === state.events) return state;
-  return { ...state, deals, tasks, events };
 }
 
 const DEFAULT_FALLBACK_PROFILE: Profile = {

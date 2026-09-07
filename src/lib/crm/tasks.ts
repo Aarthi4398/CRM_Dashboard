@@ -1,4 +1,5 @@
 import type { CRMState, CRMTask, TaskStatus } from "../types";
+import { findUniqueCompanyIdByName } from "./relationships";
 
 export function setTaskStatus(state: CRMState, id: string, status: TaskStatus): CRMState {
   return {
@@ -16,7 +17,7 @@ export function addTask(state: CRMState, title: string, relatedTo: string): CRMS
     status: "To do",
     dueDate: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10),
     relatedTo: relatedTo || "General",
-    relatedToId: state.companies.find((company) => company.name === relatedTo)?.id,
+    relatedToId: findUniqueCompanyIdByName(state.companies, relatedTo),
   };
   return { ...state, tasks: [...state.tasks, task] };
 }
