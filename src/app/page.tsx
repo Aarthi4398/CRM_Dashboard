@@ -1,2 +1,8 @@
 import { redirect } from "next/navigation";
-export default function Home(){redirect("/dashboard")}
+import { pageMetadata } from "@/lib/routes/page-metadata";
+
+export const metadata = pageMetadata("Home");
+
+export default function Home() {
+  redirect("/dashboard");
+}

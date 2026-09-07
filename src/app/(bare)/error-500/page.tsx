@@ -1,1 +1,8 @@
-import {ErrorPage} from "@/components/status-page"; export default function Page(){return <ErrorPage code="500"/>}
+import { ErrorPage } from "@/components/status-page";
+import { pageMetadata } from "@/lib/routes/page-metadata";
+
+export const metadata = pageMetadata("500 Error");
+
+export default function Page() {
+  return <ErrorPage code="500" />;
+}

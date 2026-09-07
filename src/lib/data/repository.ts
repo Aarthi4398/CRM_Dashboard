@@ -49,3 +49,23 @@ export function createMemoryRepository(initial: CRMState | null = null): CRMRepo
     },
   };
 }
+
+export function parsePersistedCRMState(raw: string | null): CRMState | null {
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!isCRMState(parsed)) return null;
+    return normalizeCRMRelationships(parsed);
+  } catch {
+    return null;
+  }
+}
+
+export function serializeCRMState(state: CRMState): string {
+  return JSON.stringify(state);
+}
+
+export function shouldApplyStorageUpdate(current: CRMState, incomingRaw: string | null): boolean {
+  if (!incomingRaw) return true;
+  return serializeCRMState(current) !== incomingRaw;
+}

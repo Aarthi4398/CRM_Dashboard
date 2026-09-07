@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { createLocalStorageRepository } from "./data/repository";
+import { CRM_STORAGE_KEY, createLocalStorageRepository, parsePersistedCRMState, serializeCRMState, shouldApplyStorageUpdate } from "./data/repository";
 import { seedState } from "./seed";
 import type { CRMState } from "./types";
 import { normalizeCRMRelationships } from "./validate-state";
@@ -39,7 +39,24 @@ export function StoreProvider({children}:{children:React.ReactNode}) {
   // Hydration is the one deliberate effect-to-state synchronization point.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(()=>{ const restored=repository.load(); if(restored) setRawState(restored); setHydrated(true); },[]);
-  useEffect(()=>{ if(hydrated) repository.save(state); },[state,hydrated]);
+  useEffect(() => {
+    if (!hydrated) return;
+    const serialized = serializeCRMState(state);
+    if (localStorage.getItem(CRM_STORAGE_KEY) === serialized) return;
+    repository.save(state);
+  }, [state, hydrated]);
+  useEffect(() => {
+    if (!hydrated) return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== CRM_STORAGE_KEY || event.storageArea !== localStorage) return;
+      if (!shouldApplyStorageUpdate(currentState.current, event.newValue)) return;
+      const restored = parsePersistedCRMState(event.newValue);
+      if (restored) setRawState(restored);
+      else if (event.newValue === null) setRawState(seedState);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [hydrated]);
   const reset=useCallback(()=>{setRawState(seedState);repository.clear();},[]);
   const value=useMemo(()=>({state,setState,reset,hydrated}),[state,setState,reset,hydrated]);
   const actions=useMemo(()=>({setState,reset}),[setState,reset]);

@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight, Clipboard, Clock3, CloudUpload, CreditCard, Eye, EyeOff, Mail, X } from "lucide-react";
 import "@/styles/pages/form-elements.css";
-import { useRef, useState } from "react";
+import { Children, cloneElement, isValidElement, useId, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
 const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
@@ -73,8 +73,62 @@ export default function FormElementsPage() {
 }
 
 function FormCard({ title, children, bodyClassName = "" }: { title: string; children: React.ReactNode; bodyClassName?: string }) { return <section className="panel overflow-hidden"><header className="border-b border-[var(--border)] px-5 py-4 sm:px-6 sm:py-5"><h2 className="text-base font-semibold">{title}</h2></header><div className={`space-y-[21px] p-5 sm:p-6 ${bodyClassName}`}>{children}</div></section>; }
-function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div><span className="mb-2 block text-sm font-medium">{label}</span>{children}</div>; }
-function Select({ name, placeholder = "Select an option" }: { name: string; placeholder?: string }) { return <div className="relative"><select className="control appearance-none pr-10" name={name} defaultValue=""><option value="" disabled>{placeholder}</option><option>Marketing</option><option>Template</option><option>Development</option></select><ChevronDown className="muted pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" size={18}/></div>; }
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  const fieldId = useId();
+  return (
+    <div>
+      <label htmlFor={fieldId} className="mb-2 block text-sm font-medium">{label}</label>
+      {assignFirstControlId(children, fieldId)}
+    </div>
+  );
+}
+
+function assignFirstControlId(node: ReactNode, id: string): ReactNode {
+  const updated = transformFirstControl(node, id);
+  return updated ?? node;
+}
+
+function transformFirstControl(node: ReactNode, id: string): ReactNode | null {
+  if (Array.isArray(node)) {
+    let assigned = false;
+    const next = node.map((child) => {
+      if (assigned) return child;
+      const updated = transformFirstControl(child, id);
+      if (updated !== null) {
+        assigned = true;
+        return updated;
+      }
+      return child;
+    });
+    return assigned ? next : null;
+  }
+  if (!isValidElement(node)) return null;
+  const element = node as ReactElement<{ children?: ReactNode; id?: string }>;
+  if (typeof element.type === "string") {
+    if (element.type === "input" || element.type === "select" || element.type === "textarea") {
+      return cloneElement(element, { id: element.props.id ?? id });
+    }
+    if (element.type === "button") return null;
+  }
+  if (element.props.children) {
+    let assigned = false;
+    const children = Children.map(element.props.children, (child) => {
+      if (assigned || child === null || child === undefined) return child;
+      const updated = transformFirstControl(child, id);
+      if (updated !== null) {
+        assigned = true;
+        return updated;
+      }
+      return child;
+    });
+    if (assigned) return cloneElement(element, {}, children);
+  }
+  if (typeof element.type !== "string" && !element.props.id) {
+    return cloneElement(element, { id });
+  }
+  return null;
+}
+function Select({ name, placeholder = "Select an option", id }: { name: string; placeholder?: string; id?: string }) { return <div className="relative"><select id={id} className="control appearance-none pr-10" name={name} defaultValue=""><option value="" disabled>{placeholder}</option><option>Marketing</option><option>Template</option><option>Development</option></select><ChevronDown className="muted pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" size={18}/></div>; }
 function IconControl({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) { return <div className="control !flex h-11 items-center gap-3 py-0">{icon}<span className="h-5 border-l border-[var(--border)]"/>{children}</div>; }
 function InputAddon({ side, addon, children }: { side: "left" | "right"; addon: string; children: React.ReactNode }) { return <div className="control !flex items-center !p-0">{side === "left" && <span className="h-11 shrink-0 border-r border-[var(--border)] px-4 leading-[44px]">{addon}</span>}{children}{side === "right" && <span className="h-11 shrink-0 border-l border-[var(--border)] px-4 leading-[44px]">{addon}</span>}</div>; }
 function CheckControl({ label, checked, disabled, onChange }: { label: string; checked: boolean; disabled?: boolean; onChange?: (value: boolean) => void }) { return <label className={`flex items-center gap-3 text-sm ${disabled ? "muted" : ""}`}><input className="h-5 w-5 rounded accent-[#465fff]" type="checkbox" checked={checked} disabled={disabled} onChange={(event) => onChange?.(event.target.checked)}/>{label}</label>; }
