@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { seedState } from "../../src/lib/seed.ts";
 import { productionContentSecurityPolicy } from "../../src/lib/security-headers.ts";
-import { isCRMState, normalizeCRMRelationships } from "../../src/lib/validate-state.ts";
+import { isCRMState } from "../../src/lib/validation/crm.ts";
+import { normalizeCRMRelationships } from "../../src/lib/crm/relationships.ts";
 
 test("CRM seed records remain connected across portfolio pages", () => {
   assert.ok(seedState.contacts.length > 3);

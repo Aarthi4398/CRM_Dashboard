@@ -9,14 +9,14 @@ import { upsertContact } from "../../src/lib/crm/contacts.ts";
 import {
   findUniqueCompanyIdByName,
   normalizeCRMRelationships,
-} from "../../src/lib/validate-state.ts";
+} from "../../src/lib/crm/relationships.ts";
 import { seedState } from "../../src/lib/seed.ts";
 import {
   CRM_SCHEMA_VERSION,
   migrateParsedValue,
   parsePersistedCRMState,
   serializeCRMState,
-} from "../../src/lib/validate-state.ts";
+} from "../../src/lib/persistence/persisted-crm.ts";
 
 function withDuplicateCompanies(state) {
   return {

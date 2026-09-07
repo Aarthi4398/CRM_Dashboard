@@ -1,27 +1,13 @@
+import { normalizeCRMRelationships } from "../crm/relationships";
 import type { CRMState } from "../types";
 import {
   CRM_SCHEMA_VERSION,
   CRM_STORAGE_KEY,
   CRM_STORAGE_KEY_LEGACY,
-  isCRMStorageKey,
   migrateParsedValue,
-  normalizeCRMRelationships,
-  parsePersistedCRMState,
   parsePersistedCRMStateDetailed,
   serializeCRMState,
-  shouldApplyStorageUpdate,
-} from "../validate-state";
-
-export {
-  CRM_SCHEMA_VERSION,
-  CRM_STORAGE_KEY,
-  CRM_STORAGE_KEY_LEGACY,
-  isCRMStorageKey,
-  parsePersistedCRMState,
-  parsePersistedCRMStateDetailed,
-  serializeCRMState,
-  shouldApplyStorageUpdate,
-};
+} from "../persistence/persisted-crm";
 
 export type CRMRepository = {
   load(): CRMState | null;

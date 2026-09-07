@@ -7,8 +7,9 @@ import {
   parsePersistedCRMState,
   parsePersistedCRMStateDetailed,
   serializeCRMState,
-} from "../../src/lib/validate-state.ts";
-import { normalizeCRMRelationships, sanitizeCRMState } from "../../src/lib/validate-state.ts";
+} from "../../src/lib/persistence/persisted-crm.ts";
+import { normalizeCRMRelationships } from "../../src/lib/crm/relationships.ts";
+import { sanitizeCRMState } from "../../src/lib/validation/crm.ts";
 
 test("valid legacy unversioned state migrates and preserves records", () => {
   const result = migrateParsedValue(seedState);

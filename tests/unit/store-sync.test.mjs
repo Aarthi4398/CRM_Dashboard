@@ -3,13 +3,13 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { upsertContact } from "../../src/lib/crm/contacts.ts";
-import { createCRMStore } from "../../src/lib/validate-state.ts";
+import { createCRMStore } from "../../src/lib/crm-store.ts";
 import { seedState } from "../../src/lib/seed.ts";
 import {
   parsePersistedCRMState,
   serializeCRMState,
   shouldApplyStorageUpdate,
-} from "../../src/lib/validate-state.ts";
+} from "../../src/lib/persistence/persisted-crm.ts";
 
 const storeSource = readFileSync(join(process.cwd(), "src/lib/store.tsx"), "utf8");
 

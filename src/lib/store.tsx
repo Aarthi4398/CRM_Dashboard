@@ -1,14 +1,14 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { createLocalStorageRepository } from "./data/repository";
 import {
   CRM_STORAGE_KEY,
-  createLocalStorageRepository,
   isCRMStorageKey,
   parsePersistedCRMState,
   serializeCRMState,
   shouldApplyStorageUpdate,
-} from "./data/repository";
+} from "./persistence/persisted-crm";
 import { createCRMStore, type CRMStore } from "./crm-store";
 import { seedState } from "./seed";
 import type { CRMState } from "./types";
