@@ -75,6 +75,33 @@ export function eventLinkedToCompany(event: CalendarEvent, company: Company, com
   );
 }
 
+export function dealLinkedToContact(deal: Deal, contact: Contact, contacts: Contact[]): boolean {
+  if (deal.contactId === contact.id) return true;
+  if (deal.contactId) return false;
+  return (
+    deal.contact === contact.name
+    && findUniqueContactIdByName(contacts, contact.name) === contact.id
+  );
+}
+
+export function taskLinkedToContact(task: CRMTask, contact: Contact, contacts: Contact[]): boolean {
+  if (task.relatedToId === contact.id) return true;
+  if (task.relatedToId) return false;
+  return (
+    task.relatedTo === contact.name
+    && findUniqueContactIdByName(contacts, contact.name) === contact.id
+  );
+}
+
+export function eventLinkedToContact(event: CalendarEvent, contact: Contact, contacts: Contact[]): boolean {
+  if (event.relatedToId === contact.id) return true;
+  if (event.relatedToId) return false;
+  return (
+    event.relatedTo === contact.name
+    && findUniqueContactIdByName(contacts, contact.name) === contact.id
+  );
+}
+
 function withRelated<T>(items: T[], update: (item: T) => T): T[] {
   let changed = false;
   const next = items.map((item) => {

@@ -54,7 +54,7 @@ export default function ContactsPage() {
 function Contacts() {
   const contacts = useCRMSelector((state) => state.contacts);
   const { setState } = useCRMActions();
-  const { confirmAction } = useFeedback();
+  const { confirmAction, toast } = useFeedback();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const modal = useEntityModal<Contact, ContactDraft>({ blankDraft, toDraft: contactToDraft });
@@ -153,7 +153,11 @@ function Contacts() {
                               confirmLabel: "Delete",
                             })
                           ) {
-                            setState((state) => deleteContact(state, contact.id));
+                            try {
+                              setState((state) => deleteContact(state, contact.id));
+                            } catch (error) {
+                              toast(error instanceof Error ? error.message : "Unable to delete contact");
+                            }
                           }
                         }}
                       >

@@ -6,7 +6,11 @@ import {
   upsertCompany,
   validateCompanyDraft,
 } from "../../src/lib/crm/companies.ts";
-import { deleteContact, upsertContact } from "../../src/lib/crm/contacts.ts";
+import {
+  contactDeleteBlockMessage,
+  deleteContact,
+  upsertContact,
+} from "../../src/lib/crm/contacts.ts";
 import { moveDeal } from "../../src/lib/crm/deals.ts";
 import { addTask } from "../../src/lib/crm/tasks.ts";
 import { isBarePath, showsPageSummary } from "../../src/lib/routes/chrome.ts";
@@ -30,12 +34,138 @@ test("upsertContact creates, updates, and syncs related deal names", () => {
   assert.ok(renamed.deals.every((deal) => deal.contactId !== existing.id || deal.contact === "Renamed Contact"));
 });
 
-test("deleteContact removes only that record", () => {
-  const id = seedState.contacts[0]?.id;
-  assert.ok(id);
-  const next = deleteContact(seedState, id);
-  assert.equal(next.contacts.some((contact) => contact.id === id), false);
-  assert.equal(next.contacts.length, seedState.contacts.length - 1);
+test("deleteContact removes only unlinked records", () => {
+  const created = upsertContact(seedState, {
+    name: "Disposable Person",
+    role: "Temp",
+    company: "Orphan Co",
+    email: "disposable@example.com",
+    phone: "1",
+    status: "Lead",
+  });
+  const disposable = created.contacts.find((contact) => contact.name === "Disposable Person");
+  assert.ok(disposable);
+  const next = deleteContact(created, disposable.id);
+  assert.equal(next.contacts.some((contact) => contact.id === disposable.id), false);
+  assert.equal(next.contacts.length, created.contacts.length - 1);
+});
+
+test("deleteContact blocks contacts linked by deal contactId", () => {
+  const linked = seedState.contacts.find((contact) => contact.id === "c1");
+  assert.ok(linked);
+  const blockMessage = contactDeleteBlockMessage(seedState, linked.id);
+  assert.match(blockMessage ?? "", /Cannot delete John Doe/);
+  assert.throws(() => deleteContact(seedState, linked.id), /Cannot delete John Doe/);
+});
+
+test("blocked contact delete leaves contact and linked deal unchanged", () => {
+  const linked = seedState.contacts.find((contact) => contact.id === "c1");
+  assert.ok(linked);
+  const dealBefore = seedState.deals.find((deal) => deal.contactId === linked.id);
+  assert.ok(dealBefore);
+
+  assert.throws(() => deleteContact(seedState, linked.id));
+
+  assert.equal(seedState.contacts.some((contact) => contact.id === linked.id), true);
+  const dealAfter = seedState.deals.find((deal) => deal.id === dealBefore.id);
+  assert.deepEqual(dealAfter, dealBefore);
+});
+
+test("deleteContact blocks legacy unique-name deal references", () => {
+  const linked = seedState.contacts.find((contact) => contact.id === "c1");
+  assert.ok(linked);
+  const legacyDealState = {
+    ...seedState,
+    deals: seedState.deals.map((deal) =>
+      deal.id === "d1"
+        ? { ...deal, contactId: undefined, contact: linked.name }
+        : deal,
+    ),
+  };
+  assert.match(contactDeleteBlockMessage(legacyDealState, linked.id) ?? "", /deal\(s\)/);
+  assert.throws(() => deleteContact(legacyDealState, linked.id), /Cannot delete John Doe/);
+});
+
+test("deleteContact ignores ambiguous duplicate-name deal references", () => {
+  const linked = seedState.contacts.find((contact) => contact.id === "c1");
+  assert.ok(linked);
+  const ambiguousState = {
+    ...seedState,
+    contacts: [
+      ...seedState.contacts,
+      {
+        ...linked,
+        id: "c1-dup",
+        email: "john.duplicate@example.com",
+        initials: "JD",
+      },
+    ],
+    deals: seedState.deals.map((deal) =>
+      deal.id === "d1"
+        ? { ...deal, contactId: undefined, contact: linked.name }
+        : deal,
+    ),
+  };
+  assert.equal(contactDeleteBlockMessage(ambiguousState, linked.id), null);
+  const next = deleteContact(ambiguousState, linked.id);
+  assert.equal(next.contacts.some((contact) => contact.id === linked.id), false);
+});
+
+test("deleteContact blocks task and event references by relatedToId", () => {
+  const linked = seedState.contacts.find((contact) => contact.id === "c1");
+  assert.ok(linked);
+  const relatedState = {
+    ...seedState,
+    deals: seedState.deals.map((deal) =>
+      deal.contactId === linked.id ? { ...deal, contactId: undefined, contact: "Unrelated" } : deal,
+    ),
+    tasks: [
+      ...seedState.tasks,
+      {
+        id: "t-contact",
+        title: "Follow up with John",
+        description: "Check in",
+        priority: "Low",
+        status: "To do",
+        dueDate: "2026-09-01",
+        relatedTo: linked.name,
+        relatedToId: linked.id,
+      },
+    ],
+    events: [
+      ...seedState.events,
+      {
+        id: "e-contact",
+        title: "John review",
+        date: "2026-09-02",
+        time: "09:00",
+        category: "Meeting",
+        attendees: 2,
+        relatedTo: linked.name,
+        relatedToId: linked.id,
+      },
+    ],
+  };
+  const blockMessage = contactDeleteBlockMessage(relatedState, linked.id);
+  assert.match(blockMessage ?? "", /task\(s\)/);
+  assert.match(blockMessage ?? "", /event\(s\)/);
+  assert.throws(() => deleteContact(relatedState, linked.id), /Cannot delete John Doe/);
+});
+
+test("unrelated contact can still be deleted when another contact is linked", () => {
+  const withDisposable = upsertContact(seedState, {
+    name: "Disposable Person",
+    role: "Temp",
+    company: "Orphan Co",
+    email: "disposable@example.com",
+    phone: "1",
+    status: "Lead",
+  });
+  const disposable = withDisposable.contacts.find((contact) => contact.name === "Disposable Person");
+  assert.ok(disposable);
+  const next = deleteContact(withDisposable, disposable.id);
+  assert.equal(next.contacts.some((contact) => contact.id === disposable.id), false);
+  assert.equal(next.contacts.some((contact) => contact.id === "c1"), true);
 });
 
 test("moveDeal updates stage probability", () => {

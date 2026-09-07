@@ -114,4 +114,13 @@ test("company delete is blocked when related records exist", async ({ page }) =>
   await expect(page.getByRole("status")).toContainText(/Cannot delete Nova Labs/);
   await expect(page.getByText("Nova Labs", { exact: true })).toBeVisible();
 });
+
+test("contact delete is blocked when related records exist", async ({ page }) => {
+  await page.goto("/contacts");
+  const row = page.getByRole("row").filter({ hasText: "John Doe" });
+  await row.getByRole("button", { name: "Delete" }).click();
+  await page.getByRole("dialog", { name: "Delete contact" }).getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByRole("status")).toContainText(/Cannot delete John Doe/);
+  await expect(page.getByText("John Doe", { exact: true })).toBeVisible();
+});
 });
