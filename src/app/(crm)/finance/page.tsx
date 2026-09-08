@@ -84,7 +84,7 @@ export default function FinancePage() {
     </section>
 
     <section className="finance-middle-grid">
-      <article className="finance-panel finance-cashflow"><div className="finance-card-head"><h2>Cashflow Overview</h2><div className="finance-selects"><FinanceDropdown label="Cashflow year" value={year} options={["2025","2024"]} onChange={setYear}/><FinanceDropdown label="Cashflow period" value={period} options={["3 Month","6 Month","Yearly"]} onChange={setPeriod}/></div></div><div className="finance-cash-summary"><div><span>Total Revenue</span><strong>$9,758.00</strong><small><ArrowUp/> 7.96%</small></div><div className="finance-legend"><span><i className="income"/>Income</span><span><i className="expense"/>Expense</span></div></div><BarChart/></article>
+      <article className="finance-panel finance-cashflow"><div className="finance-card-head"><h2>Cashflow Overview</h2><div className="finance-selects"><FinanceDropdown label="Cashflow year" value={year} options={["2025","2024"]} onChange={setYear}/><FinanceDropdown label="Cashflow period" value={period} options={["3 Month","6 Month","Yearly"]} onChange={setPeriod}/></div></div><div className="finance-cash-summary"><div><span>Total Revenue</span><strong>$9,758.00</strong><small className="finance-revenue-badge">+7.96%</small></div><div className="finance-legend"><span><i className="income"/>Income</span><span><i className="expense"/>Expense</span></div></div><BarChart/></article>
       <aside className="finance-panel finance-card-column"><div className="finance-card-head"><h2>My Cards</h2><button onClick={() => alert("Add card opened")}><Plus/> Add Card</button></div><BankCard card={virtualCards[card]}/><div className="virtual-nav"><b><CreditCard/>Virtual Card</b><span><button aria-label="Previous card" disabled={card===0} onClick={()=>setCard(value=>Math.max(0,value-1))}><ChevronLeft/></button><button aria-label="Next card" disabled={card===virtualCards.length-1} onClick={()=>setCard(value=>Math.min(virtualCards.length-1,value+1))}><ChevronRight/></button></span></div><div className="mini-transactions"><p>Recent Transactions</p>{[["Payment Received","+$120.00","Mar 20","Cashback from Stellar Rewards"],["Netflix Subscription","-$36.24","Sep 18","September subscription charge"],["Money received","+$590","Feb 12","Payment received via PayPal"],["Google Ads","+$236.24","Jan 28","Payment received form google ads"],["Money received","+$1,093","Jan 10","Payment received via PayPal"]].map(x=><button key={`${x[0]}-${x[2]}`} onClick={()=>alert(`${x[0]} selected`)}><VirtualTransactionIcon type={x[0]}/><span><b>{x[0]}</b><small>{x[3]}</small></span><span className="mini-amount"><em className={x[1].startsWith("+")?"positive":"negative"}>{x[1]}</em><small>{x[2]}</small></span><ChevronRight/></button>)}</div><button className="all-transactions" onClick={()=>document.getElementById("recent-transactions")?.scrollIntoView({behavior:"smooth"})}>See All Transactions</button></aside>
     </section>
 
@@ -99,4 +99,37 @@ export default function FinancePage() {
 
 function FinanceKpi({icon,tone,title,value,change,caption,negative,ring}:{icon:React.ReactNode;tone:string;title:string;value:string;change:string;caption:string;negative?:boolean;ring?:boolean}) { return <article className="finance-kpi"><div className={`finance-kpi-icon ${tone}`}>{icon}</div><div><span>{title}</span><strong>{value}</strong>{ring?<small>{caption}</small>:<small className={negative?"negative":"positive"}>{negative?<ArrowDown/>:<ArrowUp/>}{change} <em>{caption}</em></small>}</div>{ring&&<div className="saving-ring">26%</div>}</article> }
 function BankCard({card}:{card:(typeof virtualCards)[number]}){const alternate=card.number!==virtualCards[0].number;return <div className={`bank-card card-${alternate?1:0}`}><span className="bank-card-pattern"/><div className="bank-card-top"><div><span className="contactless">)))</span><span className="card-active">Active</span></div><span className="mastercard"><i/><i/><small>mastercard</small></span></div><h3>{card.name}</h3><div className="bank-card-details"><span><small>Card Number</small><b>•••• •••• •••• {card.number}</b></span><span><small>EXP</small><b>{card.exp}</b></span><span><small>CVC</small><b>{card.cvc}</b></span></div></div>}
-function BarChart(){return <div className="cashflow-chart"><div className="chart-grid">{[25,20,15,10,5,0].map(x=><span key={x}>{x}K</span>)}</div><div className="chart-bars">{months.map((m,i)=>{const total=income[i]+expense[i];return <div key={m}><div className="bar-stack" tabIndex={0} aria-label={`${m}: total revenue $${total.toLocaleString("en-US")}, income $${income[i].toLocaleString("en-US")}, expense $${expense[i].toLocaleString("en-US")}`}><span className="bar-tooltip"><strong>{m} Total Revenue</strong><em>${total.toLocaleString("en-US")}</em><small>Income ${income[i].toLocaleString("en-US")} · Expense ${expense[i].toLocaleString("en-US")}</small></span><i style={{height:`${expense[i]/180}px`}}/><b style={{height:`${income[i]/300}px`}}/></div><span>{m}</span></div>})}</div></div>}
+const cashflowMaxY = 25000;
+const cashflowChartHeight = 215;
+const cashflowBarHeight = (value: number) => `${(value / cashflowMaxY) * cashflowChartHeight}px`;
+
+function BarChart() {
+  return (
+    <div className="cashflow-chart">
+      <div className="chart-grid">{[25, 20, 15, 10, 5, 0].map((x) => <span key={x}>{x}K</span>)}</div>
+      <div className="chart-bars">
+        {months.map((m, i) => {
+          const total = income[i] + expense[i];
+          return (
+            <div key={m}>
+              <div
+                className="bar-stack"
+                tabIndex={0}
+                aria-label={`${m}: total revenue $${total.toLocaleString("en-US")}, income $${income[i].toLocaleString("en-US")}, expense $${expense[i].toLocaleString("en-US")}`}
+              >
+                <span className="bar-tooltip">
+                  <strong>{m}</strong>
+                  <em>Total ${total.toLocaleString("en-US")}</em>
+                  <small>Income ${income[i].toLocaleString("en-US")} · Expense ${expense[i].toLocaleString("en-US")}</small>
+                </span>
+                <i style={{ height: cashflowBarHeight(expense[i]) }} aria-hidden="true" />
+                <b style={{ height: cashflowBarHeight(income[i]) }} aria-hidden="true" />
+              </div>
+              <span>{m}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
