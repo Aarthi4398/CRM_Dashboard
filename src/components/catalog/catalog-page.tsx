@@ -87,8 +87,8 @@ for (const [index, token] of LAYOUT_SLUGS.entries()) {
 }
 
 const uiRoutes = [
-  "avatar", "avatars", "badge", "breadcrumb", "buttons", "buttons-group", "images", "links", "list",
-  "modals", "notification", "notifications", "progress-bar", "ribbons", "spinners", "tooltips", "videos",
+  "avatars", "badge", "breadcrumb", "buttons", "buttons-group", "images", "links", "list",
+  "modals", "notifications", "progress-bar", "ribbons", "spinners", "tooltips", "videos",
 ] as const;
 
 for (const slug of uiRoutes) {

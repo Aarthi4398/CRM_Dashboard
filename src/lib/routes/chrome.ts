@@ -3,6 +3,8 @@ export const BARE_PATHS = new Set([
   "/signup",
   "/reset-password",
   "/two-step-verification",
+  "/terms",
+  "/privacy",
   "/error-404",
   "/error-500",
   "/error-503",

@@ -15,10 +15,12 @@ export const bareRouteTitles: Record<string, string> = {
   "error-500": "500 Error",
   "error-503": "503 Error",
   maintenance: "Maintenance",
+  privacy: "Privacy Policy",
   success: "Success",
   signin: "Sign In",
   signup: "Sign Up",
   "reset-password": "Reset Password",
+  terms: "Terms and Conditions",
   "two-step-verification": "Two Step Verification",
 };
 
